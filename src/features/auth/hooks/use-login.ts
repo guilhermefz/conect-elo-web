@@ -10,8 +10,16 @@ export function useLogin() {
         setIsLoading(true)
         try{
             const response = await authService.login(data);
-            localStorage.setItem("token", response.token);
-            navigate("/feed");
+
+            if (response.status === 200 || response.status < 300) {
+                const token = response.data?.dados?.accessToken; 
+            
+                if (token) {
+                    localStorage.setItem("token", token);
+                    navigate("/feed");
+                }
+            }
+
         } catch (error) {
             console.error("Erro no login", error);
         } finally {
