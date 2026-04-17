@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { postService } from "../services/post-service";
 
 export const FeedPage = () => {
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
+  const [novoPost, setNovoPost] = useState("");
 
   const posts = [
       { id: 1, autor: "Guilherme", conteudo: "Primeiro post do ConectElo!" },
@@ -14,6 +16,18 @@ export const FeedPage = () => {
     localStorage.removeItem("token");
 
     navigate("/login")
+  };
+
+  const handleCriarPost = async () => {
+    try{
+      await postService.criar(novoPost);
+
+      setNovoPost("");
+      alert("Postado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao postar", error);
+      alert("Erro ao publicar. Varifique se seu token ainda é válido.");
+    }
   };
 
   return (
@@ -35,6 +49,16 @@ export const FeedPage = () => {
             style={{ color: 'red' }}>Sair</p>
         </div>
       )}
+
+      <div style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc' }}>
+        <textarea
+          placeholder="O que está acontecendo?"
+          value={novoPost}
+          onChange={(e) => setNovoPost(e.target.value)}
+          style={{ width: '100%', minHeight: '60px', display: 'block', marginBottom: '10px' }}
+        />
+        <button onClick={handleCriarPost}>Postar</button>
+      </div>
 
       <main style={{ padding: '20px' }}>
         {posts.map(post => (
