@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "./features/auth/pages/login-page";
 import { FeedPage } from "./features/feed/pages/feed-page";
+import { GruposPage } from "./features/grupo/pages/grupos-page";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/feed" element={<FeedPage />} />
+        <Route path="/grupos" element={<GruposPage />} />
 
       </Routes>
     </BrowserRouter>
