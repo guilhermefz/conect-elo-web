@@ -10,17 +10,14 @@ export function PostagemForm({ usuarioId, muralId }: Props) {
   const [conteudo, setConteudo] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErro("");
-    setSucesso(false);
 
     try {
       await criarPostagem({ conteudo, usuarioId, muralId });
-      setSucesso(true);
       setConteudo("");
     } catch {
       setErro("Erro ao criar postagem. Tente novamente.");
@@ -30,23 +27,26 @@ export function PostagemForm({ usuarioId, muralId }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="flex items-center gap-3">
+      <div className="size-9 shrink-0 rounded-full bg-green-500 flex items-center justify-center text-base select-none">🤝</div>
       <textarea
         value={conteudo}
         onChange={(e) => setConteudo(e.target.value)}
-        placeholder="O que você está pensando?"
-        className="w-full rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:outline-none resize-none"
-        rows={4}
+        placeholder="No que está pensando?"
+        className="flex-1 bg-transparent text-white placeholder-gray-400 text-sm focus:outline-none resize-none"
+        rows={1}
         required
       />
-      {erro && <p className="text-sm text-red-500">{erro}</p>}
-      {sucesso && <p className="text-sm text-green-500">Postagem criada com sucesso!</p>}
+      {erro && <p className="text-xs text-red-400 shrink-0">{erro}</p>}
       <button
         type="submit"
         disabled={loading}
-        className="self-end rounded-md bg-blue-600 px-6 py-2 font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-all"
+        title="Publicar"
+        className="size-8 shrink-0 rounded-full bg-gray-700 flex items-center justify-center text-green-400 hover:bg-gray-600 disabled:opacity-50 transition-all"
       >
-        {loading ? "Publicando..." : "Publicar"}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4">
+          <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
+        </svg>
       </button>
     </form>
   );

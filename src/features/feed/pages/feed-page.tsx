@@ -1,6 +1,7 @@
 import { useState, useEffect  } from "react";
 import { useNavigate } from "react-router-dom";
 import { PostagemForm } from "../components/postagem-form";
+import { MenuLateral } from "../components/menu-lateral";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { buscarGruposDoUsuario } from "../../grupo/services/grupo-service";
 import type { GrupoResumo } from "../../grupo/services/grupo-service";
@@ -10,6 +11,7 @@ export const FeedPage = () => {
   const [menuAberto, setMenuAberto] = useState(false);
   const [grupos, setGrupos] = useState<GrupoResumo[]>([]);
   const [grupoSelecionado, setGrupoSelecionado] = useState<GrupoResumo | null>(null);
+  const [dropdownAberto, setDropdownAberto] = useState(false);
   const usuarioId = getUsuarioIdFromToken() ?? "";
 
   const posts = [
@@ -38,42 +40,50 @@ export const FeedPage = () => {
           onClick={() => setMenuAberto(!menuAberto)}
           style={{ marginRight: "15px", background: "none", border: "none", cursor: "pointer", fontSize: "20px" }}
         >
-          {menuAberto ? "✕" : "☰"}
+          ☰
         </button>
         <span>ConectElo</span>
       </nav>
 
-      {menuAberto && (
-        <div style={{ background: "#f9f9f9", padding: "10px", textAlign: "left", borderBottom: "1px solid #ccc" }}>
-          <p>Perfil</p>
-          <p onClick={handleLogout} style={{ color: "red", cursor: "pointer" }}>Sair</p>
+      <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={handleLogout} />
+
+      <div className="p-4">
+        <div className="mx-auto max-w-xl rounded-2xl bg-gray-800 px-4 py-3 flex flex-col gap-3">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setDropdownAberto(!dropdownAberto)}
+              className="flex items-center gap-1 text-white text-xs font-bold uppercase tracking-widest cursor-pointer"
+            >
+              {grupoSelecionado?.nome ?? "Escolha um grupo"}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="size-3">
+                <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+              </svg>
+            </button>
+
+            {dropdownAberto && (
+              <ul className="absolute left-0 top-full mt-2 min-w-48 rounded-xl bg-gray-700 border border-gray-600 shadow-xl overflow-hidden z-10">
+                {grupos.map(grupo => (
+                  <li
+                    key={grupo.id}
+                    onClick={() => { setGrupoSelecionado(grupo); setDropdownAberto(false); }}
+                    className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-600 transition-colors ${grupoSelecionado?.id === grupo.id ? "text-green-400 font-semibold" : "text-white"}`}
+                  >
+                    {grupo.nome}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {grupoSelecionado && (
+            <PostagemForm usuarioId={usuarioId} muralId={grupoSelecionado.muralId} />
+          )}
+
+          {grupos.length === 0 && (
+            <p className="text-sm text-gray-400">Você não participa de nenhum grupo ainda.</p>
+          )}
         </div>
-      )}
-
-      <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
-
-        <select
-          value={grupoSelecionado?.id ?? ""}
-          onChange={(e) => {
-            const grupo = grupos.find(g => g.id === e.target.value) || null;
-            setGrupoSelecionado(grupo);
-          }}
-          style={{ width: "100%", padding: "8px", marginBottom: "10px", borderRadius: "6px", border: "1px solid #ccc" }}
-        >
-          <option value="" disabled>Escolha um grupo...</option>
-          {grupos.map(grupo => (
-            <option key={grupo.id} value={grupo.id}>{grupo.nome}</option>
-          ))}
-        </select>
-
-        {grupoSelecionado && (
-          <PostagemForm usuarioId={usuarioId} muralId={grupoSelecionado.muralId} />
-        )}
-
-        {grupos.length === 0 && (
-          <p style={{ color: "#888", fontSize: "14px" }}>Você não participa de nenhum grupo ainda.</p>
-        )}
-
       </div>
 
       <main style={{ padding: "20px" }}>
