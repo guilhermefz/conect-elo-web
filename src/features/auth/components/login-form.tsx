@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { useLogin } from "../hooks/use-login";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login, isLoading } = useLogin();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    login({ email, password });
   };
 
   return (
@@ -38,7 +41,7 @@ export function LoginForm() {
         type="submit"
         className="mt-2 w-full rounded-md bg-blue-600 py-2 font-semibold text-white hover:bg-blue-700 active:scale-95 transition-transform"
       >
-        Entrar
+        {isLoading ? "Entrando..." : "Entrar"}
       </button>
     </form>
   );
