@@ -1,19 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import { useNavigate } from "react-router-dom";
 import { PostagemForm } from "../components/postagem-form";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
-
-const MURAL_ID = "c3e99bcb-8222-41f8-89d5-4201087044ed";
+import { buscarGruposDoUsuario } from "../../grupo/services/grupo-service";
+import type { GrupoResumo } from "../../grupo/services/grupo-service";
 
 export const FeedPage = () => {
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
+  const [grupos, setGrupos] = useState<GrupoResumo[]>([]);
+  const [grupoSelecionado, setGrupoSelecionado] = useState<GrupoResumo | null>(null);
   const usuarioId = getUsuarioIdFromToken() ?? "";
 
   const posts = [
     { id: 1, autor: "Guilherme", conteudo: "Primeiro post do ConectElo!" },
     { id: 2, autor: "Admin", conteudo: "Sistema de feed validado." },
   ];
+
+  useEffect(() => {
+    buscarGruposDoUsuario(usuarioId)
+      .then((data) => {
+        setGrupos(data);
+        if (data.length > 0) setGrupoSelecionado(data[0]);
+      })
+      .catch((err) => console.error("Erro ao buscar grupos:", err));
+  }, [usuarioId]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -35,14 +46,34 @@ export const FeedPage = () => {
       {menuAberto && (
         <div style={{ background: "#f9f9f9", padding: "10px", textAlign: "left", borderBottom: "1px solid #ccc" }}>
           <p>Perfil</p>
-          <p onClick={handleLogout} style={{ color: "red", cursor: "pointer" }}>
-            Sair
-          </p>
+          <p onClick={handleLogout} style={{ color: "red", cursor: "pointer" }}>Sair</p>
         </div>
       )}
 
       <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
-        <PostagemForm usuarioId={usuarioId} muralId={MURAL_ID} />
+
+        <select
+          value={grupoSelecionado?.id ?? ""}
+          onChange={(e) => {
+            const grupo = grupos.find(g => g.id === e.target.value) || null;
+            setGrupoSelecionado(grupo);
+          }}
+          style={{ width: "100%", padding: "8px", marginBottom: "10px", borderRadius: "6px", border: "1px solid #ccc" }}
+        >
+          <option value="" disabled>Escolha um grupo...</option>
+          {grupos.map(grupo => (
+            <option key={grupo.id} value={grupo.id}>{grupo.nome}</option>
+          ))}
+        </select>
+
+        {grupoSelecionado && (
+          <PostagemForm usuarioId={usuarioId} muralId={grupoSelecionado.muralId} />
+        )}
+
+        {grupos.length === 0 && (
+          <p style={{ color: "#888", fontSize: "14px" }}>Você não participa de nenhum grupo ainda.</p>
+        )}
+
       </div>
 
       <main style={{ padding: "20px" }}>
