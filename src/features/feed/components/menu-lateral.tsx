@@ -1,5 +1,6 @@
 import { HomeIcon, ChatBubbleLeftIcon, BellIcon, UserIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import type { ComponentType, SVGProps } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface Props {
   aberto: boolean;
@@ -15,9 +16,12 @@ interface MenuItem {
 }
 
 export function MenuLateral({ aberto, onFechar, onSair }: Props) {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   const itens: MenuItem[] = [
-    { label: "Murais", icon: HomeIcon, ativo: true },
-    { label: "Chats", icon: ChatBubbleLeftIcon },
+    { label: "Murais", icon: HomeIcon, ativo: pathname === "/feed", onClick: () => { onFechar(); navigate("/feed"); } },
+    { label: "Chats", icon: ChatBubbleLeftIcon, ativo: pathname === "/grupos", onClick: () => { onFechar(); navigate("/grupos"); } },
     { label: "Avisos", icon: BellIcon },
     { label: "Meu Perfil", icon: UserIcon, onClick: onSair },
   ];
