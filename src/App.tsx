@@ -4,6 +4,7 @@ import { FeedPage } from "./features/feed/pages/feed-page";
 import { GruposPage } from "./features/grupo/pages/grupos-page";
 import { NovoGrupoPage } from "./features/grupo/pages/novo-grupo-page";
 import { ChatPage } from "./features/chat/pages/chat-page";
+import { AvisosPage } from "./features/avisos/pages/avisos-page";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/grupos" element={<GruposPage />} />
         <Route path="/grupos/novo" element={<NovoGrupoPage />} />
         <Route path="/grupos/:id/chat" element={<ChatPage />} />
+        <Route path="/avisos" element={<AvisosPage />} />
 
       </Routes>
     </BrowserRouter>
