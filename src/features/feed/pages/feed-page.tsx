@@ -8,17 +8,17 @@ import { buscarGruposDoUsuario } from "../../grupo/services/grupo-service";
 import type { GrupoResumo } from "../../grupo/services/grupo-service";
 import { useLogout } from "../../../hooks/useLogout";
 
+const posts = [
+  { id: 1, autor: "Guilherme", conteudo: "Primeiro post do ConectElo!" },
+  { id: 2, autor: "Admin", conteudo: "Sistema de feed validado." },
+];
+
 export const FeedPage = () => {
   const logout = useLogout();
   const [menuAberto, setMenuAberto] = useState(false);
   const [grupos, setGrupos] = useState<GrupoResumo[]>([]);
   const [grupoSelecionado, setGrupoSelecionado] = useState<GrupoResumo | null>(null);
   const usuarioId = getUsuarioIdFromToken() ?? "";
-
-  const posts = [
-    { id: 1, autor: "Guilherme", conteudo: "Primeiro post do ConectElo!" },
-    { id: 2, autor: "Admin", conteudo: "Sistema de feed validado." },
-  ];
 
   useEffect(() => {
     buscarGruposDoUsuario(usuarioId)

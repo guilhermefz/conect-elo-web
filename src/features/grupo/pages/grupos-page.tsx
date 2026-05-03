@@ -7,6 +7,7 @@ import { MenuLateral } from "../../../components/menu-lateral";
 import { Navbar } from "../../../components/navbar";
 import { useLogout } from "../../../hooks/useLogout";
 import { GrupoCard } from "../components/grupo-card";
+import { Fab } from "../components/fab";
 
 type Aba = "recentes" | "anonimo";
 
@@ -45,7 +46,7 @@ export function GruposPage() {
         </button>
       </div>
 
-      <div className="flex flex-col gap-3 px-4">
+      <div className="flex flex-col gap-3 px-4 pb-24">
         {grupos.map((grupo) => (
           <GrupoCard
             key={grupo.id}
@@ -58,6 +59,13 @@ export function GruposPage() {
           <p className="text-gray-500 text-sm text-center mt-10">Você não participa de nenhum grupo ainda.</p>
         )}
       </div>
+
+      <Fab
+        opcoes={[
+          { label: "Novo grupo", rota: "/grupos/novo" },
+          { label: "Nova conversa", rota: "/chat/novo" },
+        ]}
+      />
     </div>
   );
 }
