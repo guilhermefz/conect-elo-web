@@ -5,9 +5,10 @@ import { criarPostagem } from "../services/post-service";
 interface Props {
   usuarioId: string;
   muralId: string;
+  onPostar?: () => void;
 }
 
-export function PostagemForm({ usuarioId, muralId }: Props) {
+export function PostagemForm({ usuarioId, muralId, onPostar }: Props) {
   const [conteudo, setConteudo] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
@@ -20,6 +21,7 @@ export function PostagemForm({ usuarioId, muralId }: Props) {
     try {
       await criarPostagem({ conteudo, usuarioId, muralId });
       setConteudo("");
+      onPostar?.();
     } catch {
       setErro("Erro ao criar postagem. Tente novamente.");
     } finally {

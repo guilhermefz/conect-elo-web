@@ -23,7 +23,7 @@ export function MenuLateral({ aberto, onFechar, onSair }: Props) {
     { label: "Murais", icon: HomeIcon, ativo: pathname === "/feed", onClick: () => { onFechar(); navigate("/feed"); } },
     { label: "Chats", icon: ChatBubbleLeftIcon, ativo: pathname === "/grupos", onClick: () => { onFechar(); navigate("/grupos"); } },
     { label: "Avisos", icon: BellIcon },
-    { label: "Meu Perfil", icon: UserIcon, onClick: onSair },
+    { label: "Sair", icon: UserIcon, onClick: onSair },
   ];
 
   return (

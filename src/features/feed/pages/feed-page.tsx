@@ -1,23 +1,22 @@
 import { useState, useEffect } from "react";
 import { PostagemForm } from "../components/postagem-form";
+import { PostCard } from "../components/post-card";
 import { GrupoSelector } from "../components/grupo-selector";
 import { MenuLateral } from "../../../components/menu-lateral";
 import { Navbar } from "../../../components/navbar";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { buscarGruposDoUsuario } from "../../grupo/services/grupo-service";
 import type { GrupoResumo } from "../../grupo/services/grupo-service";
+import { obterFeed } from "../services/post-service";
+import type { FeedPostagemDto } from "../services/post-service";
 import { useLogout } from "../../../hooks/useLogout";
-
-const posts = [
-  { id: 1, autor: "Guilherme", conteudo: "Primeiro post do ConectElo!" },
-  { id: 2, autor: "Admin", conteudo: "Sistema de feed validado." },
-];
 
 export const FeedPage = () => {
   const logout = useLogout();
   const [menuAberto, setMenuAberto] = useState(false);
   const [grupos, setGrupos] = useState<GrupoResumo[]>([]);
   const [grupoSelecionado, setGrupoSelecionado] = useState<GrupoResumo | null>(null);
+  const [posts, setPosts] = useState<FeedPostagemDto[]>([]);
   const usuarioId = getUsuarioIdFromToken() ?? "";
 
   useEffect(() => {
@@ -27,6 +26,17 @@ export const FeedPage = () => {
         if (data.length > 0) setGrupoSelecionado(data[0]);
       })
       .catch((err) => console.error("Erro ao buscar grupos:", err));
+  }, [usuarioId]);
+
+  function carregarFeed() {
+    if (!usuarioId) return;
+    obterFeed(usuarioId)
+      .then(setPosts)
+      .catch((err) => console.error("Erro ao carregar feed:", err));
+  }
+
+  useEffect(() => {
+    carregarFeed();
   }, [usuarioId]);
 
   return (
@@ -43,7 +53,7 @@ export const FeedPage = () => {
           />
 
           {grupoSelecionado && (
-            <PostagemForm usuarioId={usuarioId} muralId={grupoSelecionado.muralId} />
+            <PostagemForm usuarioId={usuarioId} muralId={grupoSelecionado.muralId} onPostar={carregarFeed} />
           )}
 
           {grupos.length === 0 && (
@@ -53,12 +63,13 @@ export const FeedPage = () => {
       </div>
 
       <main className="p-4 flex flex-col gap-3">
-        {posts.map((post) => (
-          <div key={post.id} className="rounded-xl border border-gray-800 p-4">
-            <strong className="text-white text-sm">{post.autor}</strong>
-            <p className="text-gray-400 text-sm mt-1">{post.conteudo}</p>
-          </div>
-        ))}
+        {posts.length === 0 && (
+          <p className="text-gray-500 text-sm text-center mt-6">Nenhuma postagem ainda.</p>
+        )}
+        {posts.map((post) => {
+          const grupo = grupos.find((g) => g.muralId === post.muralId);
+          return <PostCard key={post.id} post={{ ...post, nomeGrupo: grupo?.nome ?? post.nomeGrupo }} />;
+        })}
       </main>
     </div>
   );
