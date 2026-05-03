@@ -51,7 +51,7 @@ export function GruposPage() {
           <GrupoCard
             key={grupo.id}
             nome={grupo.nome}
-            onClick={() => navigate(`/grupos/${grupo.id}`)}
+            onClick={() => navigate(`/grupos/${grupo.id}/chat`, { state: { nome: grupo.nome } })}
           />
         ))}
 
