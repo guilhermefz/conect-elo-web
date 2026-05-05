@@ -1,4 +1,4 @@
-import { HomeIcon, ChatBubbleLeftIcon, BellIcon, UserIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { HomeIcon, ChatBubbleLeftIcon, BellIcon, UserIcon, ArrowLeftOnRectangleIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import type { ComponentType, SVGProps } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -23,7 +23,8 @@ export function MenuLateral({ aberto, onFechar, onSair }: Props) {
     { label: "Murais", icon: HomeIcon, ativo: pathname === "/feed", onClick: () => { onFechar(); navigate("/feed"); } },
     { label: "Chats", icon: ChatBubbleLeftIcon, ativo: pathname === "/grupos", onClick: () => { onFechar(); navigate("/grupos"); } },
     { label: "Avisos", icon: BellIcon, ativo: pathname === "/avisos", onClick: () => { onFechar(); navigate("/avisos"); } },
-    { label: "Sair", icon: UserIcon, onClick: onSair },
+    { label: "Perfil", icon: UserIcon, ativo: pathname === "/perfil", onClick: () => { onFechar(); navigate("/perfil"); } },
+    { label: "Sair", icon: ArrowLeftOnRectangleIcon, onClick: onSair },
   ];
 
   return (
