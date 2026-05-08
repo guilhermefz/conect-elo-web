@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { buscarGruposDoUsuario } from "../services/grupo-service";
+import { buscarGruposDoUsuario, buildFotoGrupoUrl } from "../services/grupo-service";
 import type { GrupoResumo } from "../services/grupo-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { MenuLateral } from "../../../components/menu-lateral";
@@ -51,6 +51,7 @@ export function GruposPage() {
           <GrupoCard
             key={grupo.id}
             nome={grupo.nome}
+            fotoUrl={grupo.imgGrupo ? buildFotoGrupoUrl(grupo.imgGrupo) : null}
             onClick={() => navigate(`/grupos/${grupo.id}/chat`, { state: { nome: grupo.nome } })}
           />
         ))}
@@ -63,7 +64,6 @@ export function GruposPage() {
       <Fab
         opcoes={[
           { label: "Novo grupo", rota: "/grupos/novo" },
-          { label: "Nova conversa", rota: "/chat/novo" },
         ]}
       />
     </div>
