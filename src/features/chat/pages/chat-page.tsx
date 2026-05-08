@@ -29,7 +29,7 @@ export function ChatPage() {
       <ChatHeader nome={state?.nome ?? `Grupo ${id}`} />
 
       <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
-        {mensagens.map((msg) => (
+        {mensagens.map((msg, index) => (
           <MessageBubble
             key={msg.id}
             autor={msg.nomeAutor}
@@ -39,6 +39,7 @@ export function ChatPage() {
               minute: "2-digit",
             })}
             enviada={msg.usuarioId === usuarioId}
+            mostrarAutor={index === 0 || mensagens[index - 1].usuarioId !== msg.usuarioId}
           />
         ))}
         <div ref={bottomRef} />

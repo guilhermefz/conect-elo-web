@@ -18,16 +18,24 @@ export function useChat(grupoId: string, usuarioId: string) {
 
     // Busca histórico via REST ao abrir o chat
     useEffect(() => {
+        setMensagens([]);
+        let cancelled = false;
+
         async function carregarHistorico() {
-        const token = localStorage.getItem("token");
-        const response = await fetch(`${API_URL}/api/Mensagem/${grupoId}/historico`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await response.json();
-        if (data.sucesso) setMensagens(data.dados);
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${API_URL}/api/Mensagem/${grupoId}/historico`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await response.json();
+            if (!cancelled && data.sucesso)
+                setMensagens([...data.dados].sort(
+                    (a: Mensagem, b: Mensagem) =>
+                        new Date(a.horarioEnvio).getTime() - new Date(b.horarioEnvio).getTime()
+                ));
         }
 
         carregarHistorico();
+        return () => { cancelled = true; };
     }, [grupoId]);
 
     // Conecta ao Hub SignalR
