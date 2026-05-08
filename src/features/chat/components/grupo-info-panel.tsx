@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { XMarkIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon, CalendarIcon } from "@heroicons/react/24/outline";
-import { CameraIcon } from "@heroicons/react/24/solid";
+import { CameraIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
 import { obterGrupoPorId, atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes } from "../../grupo/services/grupo-service";
 import { ToastSucesso } from "../../perfil/components/toast-sucesso";
 
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function GrupoInfoPanel({ grupoId, aberto, onFechar }: Props) {
+  const navigate = useNavigate();
   const [detalhes, setDetalhes] = useState<GrupoDetalhes | null>(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -105,6 +107,13 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar }: Props) {
               />
               {erroFoto && <p className="text-red-400 text-xs text-center">{erroFoto}</p>}
               <p className="text-white font-bold text-base text-center">{detalhes.nome}</p>
+              <button
+                onClick={() => navigate(`/grupos/${grupoId}/editar`)}
+                className="flex items-center gap-2 bg-emerald-500 text-white font-bold uppercase tracking-widest rounded-full px-6 py-2.5 text-xs hover:bg-emerald-400 transition-colors"
+              >
+                <PencilSquareIcon className="size-4" />
+                Editar grupo
+              </button>
             </div>
 
             {detalhes.descricao && (

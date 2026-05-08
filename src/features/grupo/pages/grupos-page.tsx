@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { buscarGruposDoUsuario, buildFotoGrupoUrl } from "../services/grupo-service";
-import type { GrupoResumo } from "../services/grupo-service";
+import { buscarGruposDoUsuario, buildFotoGrupoUrl, type GrupoResumo } from "../services/grupo-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { MenuLateral } from "../../../components/menu-lateral";
 import { Navbar } from "../../../components/navbar";

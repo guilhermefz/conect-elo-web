@@ -55,6 +55,17 @@ export async function obterGrupoPorId(id: string): Promise<GrupoDetalhes> {
   return response.data.dados;
 }
 
+export interface AtualizarGrupoPayload {
+  nome: string;
+  descricao: string;
+  privado: boolean;
+  imgGrupo?: string;
+}
+
+export async function atualizarGrupo(id: string, payload: AtualizarGrupoPayload): Promise<void> {
+  await api.post("/api/Grupo/Editar", { id, ...payload });
+}
+
 export async function atualizarFotoGrupo(grupoId: string, foto: File): Promise<string> {
   const formData = new FormData();
   formData.append("foto", foto);

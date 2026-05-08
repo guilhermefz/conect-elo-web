@@ -10,18 +10,26 @@ import { useLogout } from "../../../hooks/useLogout";
 import { useChat } from "../hooks/useChat";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { obterGrupoPorId, buildFotoGrupoUrl } from "../../grupo/services/grupo-service";
+import { ToastSucesso } from "../../perfil/components/toast-sucesso";
 
 export function ChatPage() {
   const { id } = useParams<{ id: string }>();
-  const { state } = useLocation() as { state: { nome?: string } };
+  const { state } = useLocation() as { state: { nome?: string; sucesso?: boolean } };
   const logout = useLogout();
   const [menuAberto, setMenuAberto] = useState(false);
   const [infoAberto, setInfoAberto] = useState(false);
   const [nomeGrupo, setNomeGrupo] = useState(state?.nome ?? "");
   const [imgGrupo, setImgGrupo] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(state?.sucesso ? "Grupo atualizado com sucesso!" : null);
   const usuarioId = getUsuarioIdFromToken() ?? "";
   const { mensagens, enviarMensagem } = useChat(id!, usuarioId);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   useEffect(() => {
     obterGrupoPorId(id!)
@@ -40,6 +48,7 @@ export function ChatPage() {
     <div className="h-screen bg-[#12111a] flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Conectar" onMenuAbrir={() => setMenuAberto(true)} />
+      <ToastSucesso mensagem={toast} />
       <div className="flex-1 flex flex-col relative overflow-hidden">
         <ChatHeader nome={nomeGrupo || `Grupo ${id}`} imgGrupo={imgGrupo} onInfoAbrir={() => setInfoAberto(true)} />
         <GrupoInfoPanel grupoId={id!} aberto={infoAberto} onFechar={() => setInfoAberto(false)} />

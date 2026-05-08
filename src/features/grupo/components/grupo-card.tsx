@@ -1,12 +1,10 @@
 interface Props {
   nome: string;
   fotoUrl?: string | null;
-  ultimaMensagem?: string;
-  horario?: string;
   onClick: () => void;
 }
 
-export function GrupoCard({ nome, fotoUrl, ultimaMensagem = "Nenhuma mensagem ainda.", horario = "Agora", onClick }: Props) {
+export function GrupoCard({ nome, fotoUrl, onClick }: Props) {
   return (
     <button
       onClick={onClick}
@@ -18,11 +16,7 @@ export function GrupoCard({ nome, fotoUrl, ultimaMensagem = "Nenhuma mensagem ai
           : <span>🤝</span>
         }
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-white font-bold text-sm">{nome}</p>
-        <p className="text-gray-400 text-xs italic truncate mt-0.5">"{ultimaMensagem}"</p>
-      </div>
-      <span className="text-green-500 text-xs font-semibold shrink-0">{horario}</span>
+      <p className="flex-1 min-w-0 text-white font-bold text-sm truncate">{nome}</p>
     </button>
   );
 }
