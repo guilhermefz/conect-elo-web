@@ -6,42 +6,21 @@ import { ChatInput } from "../components/chat-input";
 import { Navbar } from "../../../components/navbar";
 import { MenuLateral } from "../../../components/menu-lateral";
 import { useLogout } from "../../../hooks/useLogout";
-
-interface Mensagem {
-  id: number;
-  autor: string;
-  conteudo: string;
-  horario: string;
-  enviada: boolean;
-}
-
-const MOCK_MENSAGENS: Mensagem[] = [
-  { id: 1, autor: "Ana Silva", conteudo: "Olá pessoal! O sorteio saiu?", horario: "10:31", enviada: false },
-  { id: 2, autor: "Eu", conteudo: "Eu já vi o meu! 😊", horario: "10:33", enviada: true },
-];
+import { useChat } from "../hooks/useChat";
+import { getUsuarioIdFromToken } from "../../../lib/jwt"
 
 export function ChatPage() {
   const { id } = useParams<{ id: string }>();
   const { state } = useLocation() as { state: { nome?: string } };
   const logout = useLogout();
   const [menuAberto, setMenuAberto] = useState(false);
-  const [mensagens, setMensagens] = useState<Mensagem[]>(MOCK_MENSAGENS);
+  const usuarioId = getUsuarioIdFromToken() ?? "";
+  const { mensagens, conectado, enviarMensagem } = useChat(id!, usuarioId);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [mensagens]);
-
-  function handleEnviar(texto: string) {
-    const nova: Mensagem = {
-      id: mensagens.length + 1,
-      autor: "Eu",
-      conteudo: texto,
-      horario: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
-      enviada: true,
-    };
-    setMensagens((prev) => [...prev, nova]);
-  }
 
   return (
     <div className="h-screen bg-[#12111a] flex flex-col">
@@ -50,19 +29,23 @@ export function ChatPage() {
       <ChatHeader nome={state?.nome ?? `Grupo ${id}`} />
 
       <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
-        {mensagens.map((msg) => (
+        {mensagens.map((msg, index) => (
           <MessageBubble
             key={msg.id}
-            autor={msg.autor}
+            autor={msg.nomeAutor}
             conteudo={msg.conteudo}
-            horario={msg.horario}
-            enviada={msg.enviada}
+            horario={new Date(msg.horarioEnvio).toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+            enviada={msg.usuarioId === usuarioId}
+            mostrarAutor={index === 0 || mensagens[index - 1].usuarioId !== msg.usuarioId}
           />
         ))}
         <div ref={bottomRef} />
       </div>
 
-      <ChatInput onEnviar={handleEnviar} />
+      <ChatInput onEnviar={enviarMensagem} />
     </div>
   );
 }

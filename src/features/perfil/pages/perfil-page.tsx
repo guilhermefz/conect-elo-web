@@ -17,7 +17,9 @@ export function PerfilPage() {
   const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
-  const [toast, setToast] = useState((location.state as { sucesso?: boolean })?.sucesso ?? false);
+  const [toast, setToast] = useState<string | null>(
+    (location.state as { sucesso?: boolean })?.sucesso ? "Perfil atualizado com sucesso!" : null
+  );
 
   useEffect(() => {
     obterPerfil()
@@ -32,7 +34,7 @@ export function PerfilPage() {
 
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(false), 3000);
+    const t = setTimeout(() => setToast(null), 3000);
     return () => clearTimeout(t);
   }, [toast]);
 
@@ -46,6 +48,7 @@ export function PerfilPage() {
       setFotoUrl(null);
       setTimeout(() => setFotoUrl(novaUrl), 0);
       window.dispatchEvent(new CustomEvent("foto-perfil-atualizada", { detail: novaUrl }));
+      setToast("Foto atualizada com sucesso!");
     } catch {
       setErro("Erro ao enviar foto (máx. 5MB, JPG/PNG/WebP).");
     } finally {
@@ -57,7 +60,7 @@ export function PerfilPage() {
     <div className="min-h-screen bg-[#12111a] flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Perfil" onMenuAbrir={() => setMenuAberto(true)} />
-      <ToastSucesso visivel={toast} />
+      <ToastSucesso mensagem={toast} />
 
       {carregando
         ? <p className="text-gray-400 text-center mt-10">Carregando...</p>
