@@ -20,6 +20,7 @@ export interface FeedPostagemDto {
   muralId: string;
   grupoId: string;
   nomeGrupo: string;
+  fotoPerfilUrl: string | null;
 }
 
 export async function obterFeed(usuarioId: string, pagina = 1, tamanhoPagina = 20): Promise<FeedPostagemDto[]> {

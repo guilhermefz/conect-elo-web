@@ -10,9 +10,7 @@ export function Navbar({ titulo, onMenuAbrir }: Props) {
         ☰
       </button>
       <span className="text-white font-bold uppercase tracking-widest text-sm">{titulo}</span>
-      <div className="size-9 rounded-full bg-green-500 flex items-center justify-center text-base select-none">
-        🤝
-      </div>
+      <div className="size-9" />
     </nav>
   );
 }
