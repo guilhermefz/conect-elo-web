@@ -1,4 +1,4 @@
-import { HomeIcon, ChatBubbleLeftIcon, BellIcon, UserIcon, ArrowLeftOnRectangleIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { HomeIcon, ChatBubbleLeftIcon, BellIcon, UserIcon, ArrowLeftOnRectangleIcon, XMarkIcon, GlobeAltIcon, Cog6ToothIcon, QuestionMarkCircleIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
 import type { ComponentType, SVGProps } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -21,9 +21,13 @@ export function MenuLateral({ aberto, onFechar, onSair }: Props) {
 
   const itens: MenuItem[] = [
     { label: "Murais", icon: HomeIcon, ativo: pathname === "/feed", onClick: () => { onFechar(); navigate("/feed"); } },
+    { label: "Global", icon: GlobeAltIcon, ativo: pathname === "/global", onClick: () => { onFechar(); navigate("/global"); } },
     { label: "Chats", icon: ChatBubbleLeftIcon, ativo: pathname === "/grupos", onClick: () => { onFechar(); navigate("/grupos"); } },
     { label: "Avisos", icon: BellIcon, ativo: pathname === "/avisos", onClick: () => { onFechar(); navigate("/avisos"); } },
     { label: "Perfil", icon: UserIcon, ativo: pathname === "/perfil", onClick: () => { onFechar(); navigate("/perfil"); } },
+    { label: "Configurações", icon: Cog6ToothIcon, ativo: pathname === "/configuracoes", onClick: () => { onFechar(); navigate("/configuracoes"); } },
+    { label: "Ajuda", icon: QuestionMarkCircleIcon, ativo: pathname === "/ajuda", onClick: () => { onFechar(); navigate("/ajuda"); } },
+    { label: "Sobre", icon: InformationCircleIcon, ativo: pathname === "/sobre", onClick: () => { onFechar(); navigate("/sobre"); } },
     { label: "Sair", icon: ArrowLeftOnRectangleIcon, onClick: onSair },
   ];
 
