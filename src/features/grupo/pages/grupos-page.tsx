@@ -7,7 +7,7 @@ import { Navbar } from "../../../components/navbar";
 import { useLogout } from "../../../hooks/useLogout";
 import { GrupoCard } from "../components/grupo-card";
 import { Fab } from "../components/fab";
-import { ModalEntrarConvite } from "./modal-entrar-convite";
+import { ModalEntrarConvite } from "../components/modal-entrar-convite";
 
 type Aba = "recentes" | "anonimo";
 
