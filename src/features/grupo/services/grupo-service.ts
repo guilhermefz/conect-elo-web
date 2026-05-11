@@ -72,3 +72,8 @@ export async function atualizarFotoGrupo(grupoId: string, foto: File): Promise<s
   const response = await api.patch(`/api/Grupo/${grupoId}/AtualizarFoto`, formData);
   return response.data.dados;
 }
+
+export async function entrarPorConvite(codigo: string) : Promise<GrupoResumo> {
+  const response = await api.post(`/api/Grupo/EntrarPorConvite/${codigo}`);
+  return response.data.dados;
+}
