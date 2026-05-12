@@ -2,20 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import { CameraIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
-import { obterGrupoPorId, atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes } from "../../grupo/services/grupo-service";
+import { atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes } from "../../grupo/services/grupo-service";
 import { ToastSucesso } from "../../perfil/components/toast-sucesso";
 
 interface Props {
   grupoId: string;
   aberto: boolean;
   onFechar: () => void;
+  detalhes: GrupoDetalhes | null;
 }
 
-export function GrupoInfoPanel({ grupoId, aberto, onFechar }: Props) {
+export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
   const navigate = useNavigate();
-  const [detalhes, setDetalhes] = useState<GrupoDetalhes | null>(null);
-  const [carregando, setCarregando] = useState(false);
-  const [erro, setErro] = useState<string | null>(null);
   const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [erroFoto, setErroFoto] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -28,17 +26,8 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar }: Props) {
   }, [toast]);
 
   useEffect(() => {
-    if (!aberto) return;
-    setCarregando(true);
-    setErro(null);
-    obterGrupoPorId(grupoId)
-      .then((d) => {
-        setDetalhes(d);
-        setFotoUrl(d.imgGrupo ? buildFotoGrupoUrl(d.imgGrupo) : null);
-      })
-      .catch(() => setErro("Não foi possível carregar as informações."))
-      .finally(() => setCarregando(false));
-  }, [grupoId, aberto]);
+    setFotoUrl(detalhes?.imgGrupo ? buildFotoGrupoUrl(detalhes.imgGrupo) : null);
+  }, [detalhes?.imgGrupo]);
 
   async function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -72,15 +61,11 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar }: Props) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6">
-        {carregando && (
+        {!detalhes && (
           <p className="text-gray-400 text-sm text-center mt-10">Carregando...</p>
         )}
 
-        {erro && (
-          <p className="text-red-400 text-sm text-center mt-10">{erro}</p>
-        )}
-
-        {detalhes && !carregando && (
+        {detalhes && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-3">
               <div className="relative">

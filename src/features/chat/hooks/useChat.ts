@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as signalR from "@microsoft/signalr";
+import { API_URL } from "../../../lib/config";
 
 interface Mensagem {
   id: string;
@@ -9,37 +10,16 @@ interface Mensagem {
   horarioEnvio: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
-
-export function useChat(grupoId: string, usuarioId: string) {
+export function useChat(grupoId: string) {
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [conectado, setConectado] = useState(false);
   const connectionRef = useRef<signalR.HubConnection | null>(null);
 
   useEffect(() => {
-    setMensagens([]);
-    let cancelled = false;
-
-    async function carregarHistorico() {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/Mensagem/${grupoId}/historico`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      if (!cancelled && data.sucesso)
-        setMensagens([...data.dados].sort(
-          (a: Mensagem, b: Mensagem) =>
-            new Date(a.horarioEnvio).getTime() - new Date(b.horarioEnvio).getTime()
-        ));
-    }
-
-    carregarHistorico();
-    return () => { cancelled = true; };
-  }, [grupoId]);
-
-  useEffect(() => {
     let isMounted = true;
     const token = localStorage.getItem("token");
+    setMensagens([]);
+    setConectado(false);
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${API_URL}/hubs/chat`, {
@@ -55,15 +35,31 @@ export function useChat(grupoId: string, usuarioId: string) {
 
     connectionRef.current = connection;
 
-    connection.start()
-      .then(async () => {
-        if (!isMounted) return;
-        await connection.invoke("EntrarNoGrupo", grupoId);
-        setConectado(true);
-      })
-      .catch(() => {
-        // ignorado — ocorre no StrictMode quando o componente desmonta durante a negociação
+    async function inicializar() {
+      // Carrega histórico antes de conectar o SignalR para evitar race condition
+      const response = await fetch(`${API_URL}/api/Mensagem/${grupoId}/historico`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      const data = await response.json();
+      if (!isMounted) return;
+      if (data.sucesso) {
+        setMensagens(
+          [...data.dados].sort(
+            (a: Mensagem, b: Mensagem) =>
+              new Date(a.horarioEnvio).getTime() - new Date(b.horarioEnvio).getTime()
+          )
+        );
+      }
+
+      await connection.start();
+      if (!isMounted) { connection.stop(); return; }
+      await connection.invoke("EntrarNoGrupo", grupoId);
+      if (isMounted) setConectado(true);
+    }
+
+    inicializar().catch(() => {
+      // ignorado — ocorre no StrictMode quando o componente desmonta durante a negociação
+    });
 
     return () => {
       isMounted = false;

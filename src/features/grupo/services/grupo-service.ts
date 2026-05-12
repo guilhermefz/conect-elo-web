@@ -1,6 +1,5 @@
 import api from "../../../lib/axios";
-
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
+import { API_URL } from "../../../lib/config";
 
 export function buildFotoGrupoUrl(path: string): string {
   return `${API_URL}${path}?t=${Date.now()}`;

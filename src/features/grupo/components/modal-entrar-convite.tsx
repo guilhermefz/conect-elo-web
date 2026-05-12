@@ -1,6 +1,5 @@
-import type React from "react";
-import { entrarPorConvite, type GrupoResumo } from "../services/grupo-service";
 import { useState } from "react";
+import { entrarPorConvite, type GrupoResumo } from "../services/grupo-service";
 import { Modal } from "../../../components/modal";
 
 interface Props {
