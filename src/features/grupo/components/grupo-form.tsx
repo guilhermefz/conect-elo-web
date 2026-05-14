@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FormField } from "../../../components/form-field";
 
 export interface GrupoFormData {
   nome: string;
@@ -24,8 +25,7 @@ export function GrupoForm({ onSubmit, loading = false, erro }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-semibold text-gray-300">Nome</label>
+      <FormField label="Nome">
         <input
           type="text"
           value={nome}
@@ -34,10 +34,9 @@ export function GrupoForm({ onSubmit, loading = false, erro }: Props) {
           required
           className="bg-[#1e1b2e] border border-[#2e2b42] rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
         />
-      </div>
+      </FormField>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-semibold text-gray-300">Descrição</label>
+      <FormField label="Descrição">
         <textarea
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
@@ -45,7 +44,7 @@ export function GrupoForm({ onSubmit, loading = false, erro }: Props) {
           rows={3}
           className="bg-[#1e1b2e] border border-[#2e2b42] rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
         />
-      </div>
+      </FormField>
 
       <div className="flex items-center justify-between bg-[#1e1b2e] border border-[#2e2b42] rounded-xl px-4 py-3">
         <div>

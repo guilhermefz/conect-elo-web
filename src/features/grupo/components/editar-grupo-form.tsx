@@ -1,7 +1,7 @@
 import type { AtualizarGrupoPayload } from "../services/grupo-service";
+import { FormField } from "../../../components/form-field";
 
 const inputCls = "bg-[#1e1b2e] text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500";
-const labelCls = "text-xs font-bold uppercase tracking-widest text-gray-400";
 
 interface Props {
   form: AtualizarGrupoPayload;
@@ -14,8 +14,7 @@ interface Props {
 export function EditarGrupoForm({ form, setForm, salvando, erro, onSubmit }: Props) {
   return (
     <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="flex flex-col gap-4 mt-4">
-      <div className="flex flex-col gap-1">
-        <label className={labelCls}>Nome</label>
+      <FormField label="Nome">
         <input
           type="text"
           value={form.nome}
@@ -23,17 +22,16 @@ export function EditarGrupoForm({ form, setForm, salvando, erro, onSubmit }: Pro
           required
           className={inputCls}
         />
-      </div>
+      </FormField>
 
-      <div className="flex flex-col gap-1">
-        <label className={labelCls}>Descrição</label>
+      <FormField label="Descrição">
         <textarea
           value={form.descricao}
           onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))}
           rows={3}
           className={`${inputCls} resize-none`}
         />
-      </div>
+      </FormField>
 
       <div className="flex items-center justify-between bg-[#1e1b2e] border border-[#2e2b42] rounded-xl px-4 py-3">
         <div>
