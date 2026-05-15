@@ -1,6 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import { Modal } from "../../../components/modal";
 import { FormField } from "../../../components/form-field";
+import { CriarAniversario, listarEventosPorGrupo, type ExibirEventoResumo } from "../services/evento-service";
 
 interface Props {
   onMudarAba: (aba: "chat" | "eventos") => void;
@@ -19,6 +21,12 @@ export function EventosPage({ onMudarAba }: Props) {
   const touchStartX = useRef(0);
   const [modalAberto, setModalAberto] = useState(false);
   const [tipoSelecionado, setTipoSelecionado] = useState<TipoEvento | null>(null);
+  const { id: grupoId } = useParams<{ id: string }>();
+  const [etapa, setEtapa] = useState<"tipo" | "aniversario">("tipo");
+  const [nomeAniversariante, setNomeAniversariante] = useState("");
+  const [idade, setIdade] = useState("");
+  const [erro, setErro] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState(false);
 
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX;
@@ -31,7 +39,35 @@ export function EventosPage({ onMudarAba }: Props) {
 
   function handleFechar() {
     setModalAberto(false);
+    setEtapa("tipo");
     setTipoSelecionado(null);
+    setNomeAniversariante("");
+    setIdade("");
+    setErro(null);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!grupoId) return;
+    if (!nomeAniversariante.trim()) {
+      setErro("Informe o nome do aniversariante.");
+      return;
+    }
+    setEnviando(true);
+    setErro(null);
+    try {
+      await CriarAniversario({
+        titulo: `Aniversário de ${nomeAniversariante.trim()}`,
+        grupoId,
+        nomeAniversariante: nomeAniversariante.trim(),
+        idade: idade ? Number(idade) : undefined,
+      });
+      handleFechar();
+    } catch {
+      setErro("Erro ao criar evento. Tente novamente.");
+    } finally {
+      setEnviando(false);
+    }
   }
 
   return (
@@ -60,7 +96,9 @@ export function EventosPage({ onMudarAba }: Props) {
       </div>
 
       {modalAberto && (
-        <Modal variante="bottom-sheet" titulo="Novo Evento" onFechar={handleFechar}>
+        <Modal variante="bottom-sheet" 
+               titulo={etapa === "tipo" ? "Novo Evento" : "Aniversário 🎂"}
+               onFechar={etapa === "aniversario" ? () => setEtapa("tipo") : handleFechar}>
           <FormField label="Tipo de evento">
             <div className="grid grid-cols-2 gap-2">
               {TIPOS_EVENTO.map((tipo) => {
@@ -69,7 +107,10 @@ export function EventosPage({ onMudarAba }: Props) {
                   <button
                     key={tipo.key}
                     type="button"
-                    onClick={() => setTipoSelecionado(tipo.key)}
+                    onClick={() => {
+                      setTipoSelecionado(tipo.key)
+                      if(tipo.key === "aniversario") setEtapa("aniversario");
+                    }}
                     className={`flex flex-col items-start gap-1 p-3 rounded-xl border transition-colors text-left ${
                       selecionado
                         ? "border-emerald-500 bg-emerald-500/10"
@@ -86,6 +127,19 @@ export function EventosPage({ onMudarAba }: Props) {
               })}
             </div>
           </FormField>
+
+          {etapa === "aniversario" && (
+            <FormField label="Nome do aniversariante">
+              <input
+                type="text"
+                placeholder="Digite o nome do aniversariante"
+                value={nomeAniversariante}
+                onChange={(e) => setNomeAniversariante(e.target.value)}
+                className="bg-[#12111a] text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                autoFocus
+              />
+            </FormField>
+          )}
 
           <FormField label="Nome do evento">
             <input
@@ -118,8 +172,12 @@ export function EventosPage({ onMudarAba }: Props) {
             />
           </FormField>
 
-          <button className="w-full py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 transition-colors text-white font-bold text-sm mt-2">
-            Criar evento
+          <button
+            onClick={etapa === "aniversario" ? handleSubmit : undefined}
+            disabled={enviando}
+            className="w-full py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 transition-colors text-white font-bold text-sm mt-2"
+          >
+            {enviando ? "Criando..." : "Criar evento"}
           </button>
         </Modal>
       )}
