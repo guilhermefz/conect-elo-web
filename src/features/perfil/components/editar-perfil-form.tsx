@@ -1,4 +1,5 @@
 import type { AtualizarPerfilPayload } from "../services/perfil-service";
+import { FormField } from "../../../components/form-field";
 
 const GENEROS = [
   { value: 0, label: "Masculino" },
@@ -7,7 +8,6 @@ const GENEROS = [
 ];
 
 const inputCls = "bg-[#1e1b2e] text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500";
-const labelCls = "text-xs font-bold uppercase tracking-widest text-gray-400";
 
 interface Props {
   form: AtualizarPerfilPayload;
@@ -25,28 +25,27 @@ export function EditarPerfilForm({ form, setForm, salvando, erro, onSubmit }: Pr
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4 mt-4">
-      <div className="flex flex-col gap-1">
-        <label className={labelCls}>Nome</label>
+      <FormField label="Nome">
         <input type="text" value={form.nome} onChange={campo("nome")} required className={inputCls} />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className={labelCls}>E-mail</label>
+      </FormField>
+
+      <FormField label="E-mail">
         <input type="email" value={form.email} onChange={campo("email")} required className={inputCls} />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className={labelCls}>Bio</label>
+      </FormField>
+
+      <FormField label="Bio">
         <textarea value={form.bio} onChange={campo("bio")} rows={3} className={`${inputCls} resize-none`} />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className={labelCls}>Data de nascimento</label>
+      </FormField>
+
+      <FormField label="Data de nascimento">
         <input type="date" value={form.dataNascimento} onChange={campo("dataNascimento")} className={inputCls} />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className={labelCls}>Gênero</label>
+      </FormField>
+
+      <FormField label="Gênero">
         <select value={form.genero} onChange={campo("genero")} className={inputCls}>
           {GENEROS.map((g) => <option key={g.value} value={g.value}>{g.label}</option>)}
         </select>
-      </div>
+      </FormField>
 
       {erro && <p className="text-sm text-red-400">{erro}</p>}
 

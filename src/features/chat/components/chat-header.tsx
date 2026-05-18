@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   nome: string;
+  imgGrupo?: string | null;
+  onInfoAbrir: () => void;
 }
 
-export function ChatHeader({ nome }: Props) {
+export function ChatHeader({ nome, imgGrupo, onInfoAbrir }: Props) {
   const navigate = useNavigate();
 
   return (
@@ -18,13 +20,20 @@ export function ChatHeader({ nome }: Props) {
         <XMarkIcon className="size-5" />
       </button>
 
-      <div className="size-9 rounded-full bg-gray-700 flex items-center justify-center text-base shrink-0">
-        🤝
+      <div className="size-9 rounded-full bg-gray-700 overflow-hidden shrink-0 flex items-center justify-center text-base">
+        {imgGrupo
+          ? <img src={imgGrupo} alt={nome} className="size-full object-cover" />
+          : <span>🤝</span>
+        }
       </div>
 
       <p className="flex-1 text-white font-bold text-sm">{nome}</p>
 
-      <button className="text-gray-400 hover:text-white transition-colors" aria-label="Informações">
+      <button
+        onClick={onInfoAbrir}
+        className="text-gray-400 hover:text-white transition-colors"
+        aria-label="Informações"
+      >
         <InformationCircleIcon className="size-5" />
       </button>
     </div>

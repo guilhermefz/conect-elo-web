@@ -1,34 +1,64 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, useLocation } from "react-router-dom";
-import { ChatHeader } from "../components/chat-header";
+import { useEffect, useRef, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import { MessageBubble } from "../components/message-bubble";
 import { ChatInput } from "../components/chat-input";
-import { Navbar } from "../../../components/navbar";
-import { MenuLateral } from "../../../components/menu-lateral";
-import { useLogout } from "../../../hooks/useLogout";
 import { useChat } from "../hooks/useChat";
-import { getUsuarioIdFromToken } from "../../../lib/jwt"
+import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
-export function ChatPage() {
+interface Props {
+  onMudarAba: (aba: "chat" | "eventos") => void;
+}
+
+export function ChatPage({ onMudarAba }: Props) {
   const { id } = useParams<{ id: string }>();
-  const { state } = useLocation() as { state: { nome?: string } };
-  const logout = useLogout();
-  const [menuAberto, setMenuAberto] = useState(false);
-  const usuarioId = getUsuarioIdFromToken() ?? "";
-  const { mensagens, conectado, enviarMensagem } = useChat(id!, usuarioId);
+  const usuarioId = useMemo(() => getUsuarioIdFromToken() ?? "", []);
+  const { mensagens, enviarMensagem } = useChat(id!);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+  const prevLengthRef = useRef(0);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (mensagens.length === 0) {
+      prevLengthRef.current = 0;
+      return;
+    }
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    const wasEmpty = prevLengthRef.current === 0;
+    prevLengthRef.current = mensagens.length;
+
+    if (wasEmpty) {
+      // Carga inicial: vai direto ao final sem animação
+      bottomRef.current?.scrollIntoView({ behavior: "instant" });
+      return;
+    }
+
+    // Nova mensagem: só rola se o usuário já estiver perto do final
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    if (nearBottom) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [mensagens]);
 
-  return (
-    <div className="h-screen bg-[#12111a] flex flex-col">
-      <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
-      <Navbar titulo="Conectar" onMenuAbrir={() => setMenuAberto(true)} />
-      <ChatHeader nome={state?.nome ?? `Grupo ${id}`} />
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+  }
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+  function handleTouchEnd(e: React.TouchEvent) {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 60) onMudarAba("eventos");
+  }
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {mensagens.map((msg, index) => (
           <MessageBubble
             key={msg.id}
@@ -44,7 +74,6 @@ export function ChatPage() {
         ))}
         <div ref={bottomRef} />
       </div>
-
       <ChatInput onEnviar={enviarMensagem} />
     </div>
   );

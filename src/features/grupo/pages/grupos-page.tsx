@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { buscarGruposDoUsuario } from "../services/grupo-service";
-import type { GrupoResumo } from "../services/grupo-service";
+import { buscarGruposDoUsuario, buildFotoGrupoUrl, type GrupoResumo } from "../services/grupo-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { MenuLateral } from "../../../components/menu-lateral";
 import { Navbar } from "../../../components/navbar";
 import { useLogout } from "../../../hooks/useLogout";
 import { GrupoCard } from "../components/grupo-card";
 import { Fab } from "../components/fab";
+import { ModalEntrarConvite } from "../components/modal-entrar-convite";
 
 type Aba = "recentes" | "anonimo";
 
@@ -18,12 +18,18 @@ export function GruposPage() {
   const [aba, setAba] = useState<Aba>("recentes");
   const [grupos, setGrupos] = useState<GrupoResumo[]>([]);
   const usuarioId = getUsuarioIdFromToken() ?? "";
+  const [modalConviteAberto, setModalConviteAberto] = useState(false);
 
   useEffect(() => {
     buscarGruposDoUsuario(usuarioId)
       .then(setGrupos)
       .catch((err) => console.error("Erro ao buscar grupos:", err));
   }, [usuarioId]);
+
+  function handleEntrou(novoGrupo: GrupoResumo) {
+    setModalConviteAberto(false);
+    setGrupos((atual) => [...atual, novoGrupo]);
+  }
 
   return (
     <div className="min-h-screen bg-[#12111a] flex flex-col">
@@ -51,6 +57,7 @@ export function GruposPage() {
           <GrupoCard
             key={grupo.id}
             nome={grupo.nome}
+            fotoUrl={grupo.imgGrupo ? buildFotoGrupoUrl(grupo.imgGrupo) : null}
             onClick={() => navigate(`/grupos/${grupo.id}/chat`, { state: { nome: grupo.nome } })}
           />
         ))}
@@ -60,10 +67,17 @@ export function GruposPage() {
         )}
       </div>
 
+      {modalConviteAberto && ( 
+        <ModalEntrarConvite
+          onFechar={() => setModalConviteAberto(false)}
+          onEntrou={handleEntrou}
+        />
+      )}
+
       <Fab
         opcoes={[
           { label: "Novo grupo", rota: "/grupos/novo" },
-          { label: "Nova conversa", rota: "/chat/novo" },
+          { label: "Entrar com código", onClick: () => setModalConviteAberto(true) },
         ]}
       />
     </div>

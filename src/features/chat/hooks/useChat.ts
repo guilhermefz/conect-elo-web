@@ -1,83 +1,76 @@
 import { useEffect, useRef, useState } from "react";
 import * as signalR from "@microsoft/signalr";
+import { API_URL } from "../../../lib/config";
 
 interface Mensagem {
-    id: string;
-    conteudo: string;
-    nomeAutor:string;
-    usuarioId: string;
-    horarioEnvio: string;
+  id: string;
+  conteudo: string;
+  nomeAutor: string;
+  usuarioId: string;
+  horarioEnvio: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
+export function useChat(grupoId: string) {
+  const [mensagens, setMensagens] = useState<Mensagem[]>([]);
+  const [conectado, setConectado] = useState(false);
+  const connectionRef = useRef<signalR.HubConnection | null>(null);
 
-export function useChat(grupoId: string, usuarioId: string) {
-    const [mensagens, setMensagens] = useState<Mensagem[]>([]);
-    const [conectado, setConectado] = useState(false);
-    const connectionRef = useRef<signalR.HubConnection | null>(null);
+  useEffect(() => {
+    let isMounted = true;
+    const token = localStorage.getItem("token");
+    setMensagens([]);
+    setConectado(false);
 
-    // Busca histórico via REST ao abrir o chat
-    useEffect(() => {
-        setMensagens([]);
-        let cancelled = false;
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(`${API_URL}/hubs/chat`, {
+        accessTokenFactory: () => token ?? "",
+      })
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Warning)
+      .build();
 
-        async function carregarHistorico() {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`${API_URL}/api/Mensagem/${grupoId}/historico`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const data = await response.json();
-            if (!cancelled && data.sucesso)
-                setMensagens([...data.dados].sort(
-                    (a: Mensagem, b: Mensagem) =>
-                        new Date(a.horarioEnvio).getTime() - new Date(b.horarioEnvio).getTime()
-                ));
-        }
+    connection.on("ReceberMensagem", (mensagem: Mensagem) => {
+      if (isMounted) setMensagens((prev) => [...prev, mensagem]);
+    });
 
-        carregarHistorico();
-        return () => { cancelled = true; };
-    }, [grupoId]);
+    connectionRef.current = connection;
 
-    // Conecta ao Hub SignalR
-    useEffect(() => {
-        let isMounted = true;
-        const token = localStorage.getItem("token");
+    async function inicializar() {
+      // Carrega histórico antes de conectar o SignalR para evitar race condition
+      const response = await fetch(`${API_URL}/api/Mensagem/${grupoId}/historico`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!isMounted) return;
+      if (data.sucesso) {
+        setMensagens(
+          [...data.dados].sort(
+            (a: Mensagem, b: Mensagem) =>
+              new Date(a.horarioEnvio).getTime() - new Date(b.horarioEnvio).getTime()
+          )
+        );
+      }
 
-        const connection = new signalR.HubConnectionBuilder()
-        .withUrl(`${API_URL}/hubs/chat`, {
-            accessTokenFactory: () => token ?? "",
-        })
-        .withAutomaticReconnect()
-        .configureLogging(signalR.LogLevel.Warning)
-        .build();
-
-        connection.on("ReceberMensagem", (mensagem: Mensagem) => {
-            if (isMounted) setMensagens((prev) => [...prev, mensagem]);
-        });
-
-        connectionRef.current = connection;
-
-        connection.start()
-            .then(async () => {
-                if (!isMounted) return;
-                await connection.invoke("EntrarNoGrupo", grupoId);
-                setConectado(true);
-            })
-            .catch(() => {
-                // Ignorado — ocorre no StrictMode quando o componente desmonta durante a negociação
-            });
-
-        return () => {
-            isMounted = false;
-            connection.stop();
-        };
-    }, [grupoId]);
-
-    async function enviarMensagem(conteudo:string) {
-        if (!connectionRef.current || !conectado) return;
-        await connectionRef.current.invoke("EnviarMensagem", grupoId, conteudo);
+      await connection.start();
+      if (!isMounted) { connection.stop(); return; }
+      await connection.invoke("EntrarNoGrupo", grupoId);
+      if (isMounted) setConectado(true);
     }
 
-    return { mensagens, conectado, enviarMensagem };
+    inicializar().catch(() => {
+      // ignorado — ocorre no StrictMode quando o componente desmonta durante a negociação
+    });
 
+    return () => {
+      isMounted = false;
+      connection.stop();
+    };
+  }, [grupoId]);
+
+  async function enviarMensagem(conteudo: string) {
+    if (!connectionRef.current || !conectado) return;
+    await connectionRef.current.invoke("EnviarMensagem", grupoId, conteudo);
+  }
+
+  return { mensagens, enviarMensagem };
 }
