@@ -1,8 +1,8 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Modal } from "../../../components/modal";
 import { FormField } from "../../../components/form-field";
-import { CriarAniversario, listarEventosPorGrupo, type ExibirEventoResumo } from "../services/evento-service";
+import { CriarAniversario } from "../services/evento-service";
 
 interface Props {
   onMudarAba: (aba: "chat" | "eventos") => void;
@@ -171,6 +171,8 @@ export function EventosPage({ onMudarAba }: Props) {
               className="bg-[#12111a] text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
             />
           </FormField>
+
+          {erro && <p className="text-red-400 text-sm text-center -mt-1">{erro}</p>}
 
           <button
             onClick={etapa === "aniversario" ? handleSubmit : undefined}
