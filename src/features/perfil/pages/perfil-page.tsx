@@ -44,7 +44,7 @@ export function PerfilPage() {
     setErro("");
     try {
       const url = await atualizarFoto(file);
-      const novaUrl = buildFotoUrl(url);
+      const novaUrl = `$buildFotoUrl(url)?t=${Date.now()}`;
       setFotoUrl(null);
       setTimeout(() => setFotoUrl(novaUrl), 0);
       window.dispatchEvent(new CustomEvent("foto-perfil-atualizada", { detail: novaUrl }));
