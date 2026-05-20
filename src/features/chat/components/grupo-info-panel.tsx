@@ -35,7 +35,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
     setErroFoto(null);
     try {
       const url = await atualizarFotoGrupo(grupoId, file);
-      const novaUrl = buildFotoGrupoUrl(url);
+      const novaUrl = `$buildFotoGrupoUrl(url)?t=${Date.now()}`;
       setFotoUrl(null);
       setTimeout(() => setFotoUrl(novaUrl), 0);
       setToast("Foto do grupo atualizada com sucesso!");

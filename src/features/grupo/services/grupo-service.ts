@@ -2,7 +2,7 @@ import api from "../../../lib/axios";
 import { API_URL } from "../../../lib/config";
 
 export function buildFotoGrupoUrl(path: string): string {
-  return `${API_URL}${path}?t=${Date.now()}`;
+  return `${API_URL}${path}`;
 }
 
 export interface GrupoResumo {
