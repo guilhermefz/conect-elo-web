@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Modal } from "../../../components/modal";
 import { FormField } from "../../../components/form-field";
-import { CriarAniversario } from "../services/evento-service";
+import { CriarAniversario, type ExibirEventoResumo, listarEventosPorGrupo } from "../services/evento-service";
+import { EventoCard } from "../components/evento-card";
 
 interface Props {
   onMudarAba: (aba: "chat" | "eventos") => void;
@@ -27,6 +28,20 @@ export function EventosPage({ onMudarAba }: Props) {
   const [idade, setIdade] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [eventos, setEventos] = useState<ExibirEventoResumo[]>([]);
+  const [carregando, setCarregando] = useState(true);
+
+  async function carregarEventos() {
+    if (!grupoId) return;
+    try {
+      const lista = await listarEventosPorGrupo(grupoId);
+      setEventos(lista);
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  useEffect(() => { carregarEventos(); }, [grupoId]);
 
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX;
@@ -63,6 +78,8 @@ export function EventosPage({ onMudarAba }: Props) {
         idade: idade ? Number(idade) : undefined,
       });
       handleFechar();
+
+      carregarEventos();
     } catch {
       setErro("Erro ao criar evento. Tente novamente.");
     } finally {
@@ -86,13 +103,26 @@ export function EventosPage({ onMudarAba }: Props) {
           </button>
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-8">
-          <p className="text-4xl">🎉</p>
-          <p className="text-white font-bold text-lg">Nenhum evento ainda</p>
-          <p className="text-gray-500 text-sm text-center">
-            Os eventos do grupo aparecerão aqui.
-          </p>
-        </div>
+        {carregando ? (
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-gray-500 text-sm">Carregando eventos...</p>
+          </div>
+        ) : eventos.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-8">
+            <p className="text-4xl">🎉</p>
+            <p className="text-white font-bold text-lg">Nenhum evento ainda</p>
+            <p className="text-gray-500 text-sm text-center">
+              Os eventos do grupo aparecerão aqui.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            {eventos.map((evento) => (
+              <EventoCard key={evento.id} evento={evento} />
+            ))}
+          </div>
+        )}
+
       </div>
 
       {modalAberto && (
@@ -108,7 +138,7 @@ export function EventosPage({ onMudarAba }: Props) {
                     key={tipo.key}
                     type="button"
                     onClick={() => {
-                      setTipoSelecionado(tipo.key)
+                      setTipoSelecionado(tipo.key);
                       if(tipo.key === "aniversario") setEtapa("aniversario");
                     }}
                     className={`flex flex-col items-start gap-1 p-3 rounded-xl border transition-colors text-left ${

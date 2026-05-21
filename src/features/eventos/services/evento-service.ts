@@ -1,5 +1,17 @@
 import api from "../../../lib/axios"
 
+export interface ExibirEvento {
+  id: string;
+  titulo: string;
+  descricao?: string;
+  dataInicio?: string;
+  dataCriacao: string;
+  localizacao?: string;
+  status: number;
+  tipoEvento: number;
+  grupoId: string;
+}
+
 export interface CriarAniversarioPayload {
     titulo: string;
     descricao?: string;
@@ -27,4 +39,14 @@ export async function CriarAniversario(payload:CriarAniversarioPayload): Promise
 export async function listarEventosPorGrupo(grupoId: string): Promise<ExibirEventoResumo[]> {
     const response = await api.get(`/api/Eventos/ListarPorGrupo/${grupoId}`);
     return response.data.dados ?? [];
+}
+
+export async function listarEventosDoUsuario(): Promise<ExibirEventoResumo[]> {
+  const response = await api.get("/api/Eventos/ListarDoUsuario");
+  return response.data.dados ?? [];
+}
+
+export async function buscarEventoPorId(id: string): Promise<ExibirEvento> {
+  const response = await api.get(`/api/Eventos/BuscarPorId?id=${id}`);
+  return response.data.dados;
 }

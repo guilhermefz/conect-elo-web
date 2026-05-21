@@ -3,6 +3,7 @@ import type { ComponentType, SVGProps } from "react";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { obterPerfil, buildFotoUrl } from "../features/perfil/services/perfil-service";
+import { CalendarIcon } from "@heroicons/react/24/solid";
 
 interface Props {
   aberto: boolean;
@@ -43,6 +44,7 @@ export function MenuLateral({ aberto, onFechar, onSair }: Props) {
     { label: "Global", icon: GlobeAltIcon, ativo: pathname === "/global", onClick: () => { onFechar(); navigate("/global"); } },
     { label: "Chats", icon: ChatBubbleLeftIcon, ativo: pathname === "/grupos", onClick: () => { onFechar(); navigate("/grupos"); } },
     { label: "Avisos", icon: BellIcon, ativo: pathname === "/avisos", onClick: () => { onFechar(); navigate("/avisos"); } },
+    { label: "Eventos", icon: CalendarIcon, ativo: pathname === "/eventos", onClick: () => { onFechar(); navigate("/eventos"); } },
     { label: "Configurações", icon: Cog6ToothIcon, ativo: pathname === "/configuracoes", onClick: () => { onFechar(); navigate("/configuracoes"); } },
     { label: "Ajuda", icon: QuestionMarkCircleIcon, ativo: pathname === "/ajuda", onClick: () => { onFechar(); navigate("/ajuda"); } },
     { label: "Sobre", icon: InformationCircleIcon, ativo: pathname === "/sobre", onClick: () => { onFechar(); navigate("/sobre"); } },
