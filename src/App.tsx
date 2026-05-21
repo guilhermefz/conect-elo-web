@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { EventosIndexPage } from "./features/eventos/pages/eventos-index-page";
+import { EventoDetalhePage } from "./features/eventos/pages/evento-detalhe-page";
 import { LoginPage } from "./features/auth/pages/login-page";
 import { FeedPage } from "./features/feed/pages/feed-page";
 import { GruposPage } from "./features/grupo/pages/grupos-page";
@@ -41,6 +43,9 @@ export default function App() {
         <Route path="/ajuda" element={<AjudaPage />} />
         
         <Route path="/sobre" element={<SobrePage />} />
+
+        <Route path="/eventos" element={<EventosIndexPage />} />
+        <Route path="/eventos/:id" element={<EventoDetalhePage />} />
 
       </Routes>
     </BrowserRouter>
