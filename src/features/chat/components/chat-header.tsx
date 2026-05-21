@@ -11,7 +11,7 @@ export function ChatHeader({ nome, imgGrupo, onInfoAbrir }: Props) {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 bg-[#1e1b2e]">
+    <div className="flex items-center gap-3 px-4 py-3 bg-surface">
       <button
         onClick={() => navigate("/grupos")}
         className="text-gray-400 hover:text-white transition-colors"

@@ -35,7 +35,7 @@ export function ConfiguracoesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#12111a] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Conectar" onMenuAbrir={() => setMenuAberto(true)} />
 
@@ -48,7 +48,7 @@ export function ConfiguracoesPage() {
             <UserIcon className="size-4 text-emerald-500" />
             <span className="text-emerald-500 text-xs font-semibold uppercase tracking-wider">Conta</span>
           </div>
-          <div className="bg-[#1e1b2e] rounded-2xl overflow-hidden">
+          <div className="bg-surface rounded-2xl overflow-hidden">
             {[
               { label: "Alterar senha", sub: "Atualize sua senha de acesso" },
               { label: "Alterar e-mail", sub: "Mude o e-mail vinculado à conta" },
@@ -56,8 +56,8 @@ export function ConfiguracoesPage() {
             ].map((item, i, arr) => (
               <button
                 key={item.label}
-                className={`flex items-center justify-between w-full px-4 py-3 hover:bg-[#252236] transition-colors ${
-                  i < arr.length - 1 ? "border-b border-[#2e2b42]" : ""
+                className={`flex items-center justify-between w-full px-4 py-3 hover:bg-surface-hover transition-colors ${
+                  i < arr.length - 1 ? "border-b border-subtle" : ""
                 }`}
               >
                 <div className="text-left">
@@ -76,7 +76,7 @@ export function ConfiguracoesPage() {
             <BellIcon className="size-4 text-emerald-500" />
             <span className="text-emerald-500 text-xs font-semibold uppercase tracking-wider">Notificações</span>
           </div>
-          <div className="bg-[#1e1b2e] rounded-2xl overflow-hidden">
+          <div className="bg-surface rounded-2xl overflow-hidden">
             {(
               [
                 { key: "notificacoesGerais", label: "Notificações gerais", sub: "Receber alertas do sistema" },
@@ -87,7 +87,7 @@ export function ConfiguracoesPage() {
               <div
                 key={item.key}
                 className={`flex items-center justify-between px-4 py-3 ${
-                  i < arr.length - 1 ? "border-b border-[#2e2b42]" : ""
+                  i < arr.length - 1 ? "border-b border-subtle" : ""
                 }`}
               >
                 <div>
@@ -117,7 +117,7 @@ export function ConfiguracoesPage() {
             <LockClosedIcon className="size-4 text-emerald-500" />
             <span className="text-emerald-500 text-xs font-semibold uppercase tracking-wider">Privacidade</span>
           </div>
-          <div className="bg-[#1e1b2e] rounded-2xl overflow-hidden">
+          <div className="bg-surface rounded-2xl overflow-hidden">
             {(
               [
                 { key: "perfilPublico", label: "Perfil público", sub: "Qualquer usuário pode ver seu perfil" },
@@ -127,7 +127,7 @@ export function ConfiguracoesPage() {
               <div
                 key={item.key}
                 className={`flex items-center justify-between px-4 py-3 ${
-                  i < arr.length - 1 ? "border-b border-[#2e2b42]" : ""
+                  i < arr.length - 1 ? "border-b border-subtle" : ""
                 }`}
               >
                 <div>
@@ -157,7 +157,7 @@ export function ConfiguracoesPage() {
             <PaintBrushIcon className="size-4 text-emerald-500" />
             <span className="text-emerald-500 text-xs font-semibold uppercase tracking-wider">Aparência</span>
           </div>
-          <div className="bg-[#1e1b2e] rounded-2xl overflow-hidden">
+          <div className="bg-surface rounded-2xl overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3">
               <div>
                 <p className="text-white text-sm font-bold">Tema escuro</p>

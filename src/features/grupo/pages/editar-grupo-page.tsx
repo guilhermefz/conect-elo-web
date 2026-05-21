@@ -39,7 +39,7 @@ export function EditarGrupoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#12111a] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Editar grupo" onMenuAbrir={() => setMenuAberto(true)} />
       <div className="flex-1 p-4 max-w-lg mx-auto w-full">

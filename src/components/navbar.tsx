@@ -5,7 +5,7 @@ interface Props {
 
 export function Navbar({ titulo, onMenuAbrir }: Props) {
   return (
-    <nav className="flex items-center justify-between px-4 py-3 bg-[#12111a]">
+    <nav className="flex items-center justify-between px-4 py-3 bg-background">
       <button onClick={onMenuAbrir} className="text-white text-xl">
         ☰
       </button>

@@ -1,7 +1,7 @@
 import type { AtualizarGrupoPayload } from "../services/grupo-service";
 import { FormField } from "../../../components/form-field";
 
-const inputCls = "bg-[#1e1b2e] text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500";
+const inputCls = "bg-surface text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500";
 
 interface Props {
   form: AtualizarGrupoPayload;
@@ -33,7 +33,7 @@ export function EditarGrupoForm({ form, setForm, salvando, erro, onSubmit }: Pro
         />
       </FormField>
 
-      <div className="flex items-center justify-between bg-[#1e1b2e] border border-[#2e2b42] rounded-xl px-4 py-3">
+      <div className="flex items-center justify-between bg-surface border border-subtle rounded-xl px-4 py-3">
         <div>
           <p className="text-sm font-semibold text-gray-300">Privado</p>
           <p className="text-xs text-gray-500">Somente membros convidados podem entrar</p>

@@ -9,7 +9,7 @@ export function SobrePage() {
   const [menuAberto, setMenuAberto] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#12111a] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Conectar" onMenuAbrir={() => setMenuAberto(true)} />
 
@@ -17,7 +17,7 @@ export function SobrePage() {
         <h1 className="text-white font-black text-xl uppercase tracking-widest">Sobre</h1>
 
         {/* Logo e versão */}
-        <div className="bg-[#1e1b2e] rounded-2xl p-6 flex flex-col items-center gap-2">
+        <div className="bg-surface rounded-2xl p-6 flex flex-col items-center gap-2">
           <div className="size-16 rounded-2xl bg-emerald-500 flex items-center justify-center text-3xl">
             🔗
           </div>
@@ -29,7 +29,7 @@ export function SobrePage() {
         </div>
 
         {/* Missão */}
-        <div className="bg-[#1e1b2e] rounded-2xl p-4 flex gap-4 items-start">
+        <div className="bg-surface rounded-2xl p-4 flex gap-4 items-start">
           <div className="size-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
             <HeartIcon className="size-5 text-white" />
           </div>
@@ -42,7 +42,7 @@ export function SobrePage() {
         </div>
 
         {/* Tecnologia */}
-        <div className="bg-[#1e1b2e] rounded-2xl p-4 flex gap-4 items-start">
+        <div className="bg-surface rounded-2xl p-4 flex gap-4 items-start">
           <div className="size-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
             <CodeBracketIcon className="size-5 text-white" />
           </div>
@@ -55,7 +55,7 @@ export function SobrePage() {
         </div>
 
         {/* Privacidade */}
-        <div className="bg-[#1e1b2e] rounded-2xl p-4 flex gap-4 items-start">
+        <div className="bg-surface rounded-2xl p-4 flex gap-4 items-start">
           <div className="size-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
             <ShieldCheckIcon className="size-5 text-white" />
           </div>
@@ -70,7 +70,7 @@ export function SobrePage() {
         {/* Equipe */}
         <div className="flex flex-col gap-2">
           <p className="text-emerald-500 text-xs font-semibold uppercase tracking-wider">Equipe</p>
-          <div className="bg-[#1e1b2e] rounded-2xl overflow-hidden">
+          <div className="bg-surface rounded-2xl overflow-hidden">
             {[
               { nome: "Guilherme Fiuza", papel: "Desenvolvedor Backend" },
               { nome: "Affonso Ely", papel: "Desenvolvedor Frontend" },
@@ -78,7 +78,7 @@ export function SobrePage() {
               <div
                 key={membro.nome}
                 className={`flex items-center gap-3 px-4 py-3 ${
-                  i < arr.length - 1 ? "border-b border-[#2e2b42]" : ""
+                  i < arr.length - 1 ? "border-b border-subtle" : ""
                 }`}
               >
                 <div className="size-9 rounded-full bg-gray-700 flex items-center justify-center text-base shrink-0">
@@ -96,12 +96,12 @@ export function SobrePage() {
         {/* Links */}
         <div className="flex flex-col gap-2 pb-4">
           <p className="text-emerald-500 text-xs font-semibold uppercase tracking-wider">Legal</p>
-          <div className="bg-[#1e1b2e] rounded-2xl overflow-hidden">
+          <div className="bg-surface rounded-2xl overflow-hidden">
             {["Termos de uso", "Política de privacidade"].map((item, i, arr) => (
               <button
                 key={item}
-                className={`flex items-center justify-between w-full px-4 py-3 hover:bg-[#252236] transition-colors ${
-                  i < arr.length - 1 ? "border-b border-[#2e2b42]" : ""
+                className={`flex items-center justify-between w-full px-4 py-3 hover:bg-surface-hover transition-colors ${
+                  i < arr.length - 1 ? "border-b border-subtle" : ""
                 }`}
               >
                 <p className="text-white text-sm">{item}</p>
