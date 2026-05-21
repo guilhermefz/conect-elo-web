@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Navbar } from "../../../components/navbar";
 import { MenuLateral } from "../../../components/menu-lateral";
+import { MensagemErro } from "../../../components/mensagem-erro";
 import { useLogout } from "../../../hooks/useLogout";
+import { useErrorHandler } from "../../../hooks/useErrorHandler";
 import { obterPerfil, atualizarFoto, buildFotoUrl } from "../services/perfil-service";
 import { PerfilCard } from "../components/perfil-card";
 import { ToastSucesso } from "../components/toast-sucesso";
@@ -16,7 +18,8 @@ export function PerfilPage() {
   const [bio, setBio] = useState("");
   const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState("");
+  const [erroFoto, setErroFoto] = useState("");
+  const { erro, capturarErro, limparErro } = useErrorHandler();
   const [toast, setToast] = useState<string | null>(
     (location.state as { sucesso?: boolean })?.sucesso ? "Perfil atualizado com sucesso!" : null
   );
@@ -28,7 +31,7 @@ export function PerfilPage() {
         setBio(d.bio ?? "");
         setFotoUrl(d.fotoPerfilUrl ? buildFotoUrl(d.fotoPerfilUrl) : null);
       })
-      .catch(() => {})
+      .catch(capturarErro)
       .finally(() => setCarregando(false));
   }, []);
 
@@ -41,7 +44,7 @@ export function PerfilPage() {
   async function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setErro("");
+    setErroFoto("");
     try {
       const url = await atualizarFoto(file);
       const novaUrl = `${buildFotoUrl(url)}?t=${Date.now()}`;
@@ -50,7 +53,7 @@ export function PerfilPage() {
       window.dispatchEvent(new CustomEvent("foto-perfil-atualizada", { detail: novaUrl }));
       setToast("Foto atualizada com sucesso!");
     } catch {
-      setErro("Erro ao enviar foto (máx. 5MB, JPG/PNG/WebP).");
+      setErroFoto("Erro ao enviar foto (máx. 5MB, JPG/PNG/WebP).");
     } finally {
       e.target.value = "";
     }
@@ -62,13 +65,19 @@ export function PerfilPage() {
       <Navbar titulo="Perfil" onMenuAbrir={() => setMenuAberto(true)} />
       <ToastSucesso mensagem={toast} />
 
+      {erro && (
+        <div className="p-4">
+          <MensagemErro texto={erro} onFechar={limparErro} />
+        </div>
+      )}
+
       {carregando
         ? <p className="text-gray-400 text-center mt-10">Carregando...</p>
         : <PerfilCard
             nome={nome}
             bio={bio}
             fotoUrl={fotoUrl}
-            erro={erro}
+            erro={erroFoto}
             onFotoChange={handleFoto}
             onEditar={() => navigate("/perfil/editar")}
           />

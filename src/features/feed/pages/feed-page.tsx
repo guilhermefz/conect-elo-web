@@ -4,12 +4,14 @@ import { PostCard } from "../components/post-card";
 import { GrupoSelector } from "../components/grupo-selector";
 import { MenuLateral } from "../../../components/menu-lateral";
 import { Navbar } from "../../../components/navbar";
+import { MensagemErro } from "../../../components/mensagem-erro";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { buscarGruposDoUsuario } from "../../grupo/services/grupo-service";
 import type { GrupoResumo } from "../../grupo/services/grupo-service";
 import { obterFeed } from "../services/post-service";
 import type { FeedPostagemDto } from "../services/post-service";
 import { useLogout } from "../../../hooks/useLogout";
+import { useErrorHandler } from "../../../hooks/useErrorHandler";
 
 export const FeedPage = () => {
   const logout = useLogout();
@@ -17,6 +19,7 @@ export const FeedPage = () => {
   const [grupos, setGrupos] = useState<GrupoResumo[]>([]);
   const [grupoSelecionado, setGrupoSelecionado] = useState<GrupoResumo | null>(null);
   const [posts, setPosts] = useState<FeedPostagemDto[]>([]);
+  const { erro, capturarErro, limparErro } = useErrorHandler();
   const usuarioId = getUsuarioIdFromToken() ?? "";
 
   useEffect(() => {
@@ -25,14 +28,14 @@ export const FeedPage = () => {
         setGrupos(data);
         if (data.length > 0) setGrupoSelecionado(data[0]);
       })
-      .catch((err) => console.error("Erro ao buscar grupos:", err));
+      .catch(capturarErro);
   }, [usuarioId]);
 
   function carregarFeed() {
     if (!usuarioId) return;
     obterFeed(usuarioId)
       .then(setPosts)
-      .catch((err) => console.error("Erro ao carregar feed:", err));
+      .catch(capturarErro);
   }
 
   useEffect(() => {
@@ -45,6 +48,8 @@ export const FeedPage = () => {
       <Navbar titulo="Murais" onMenuAbrir={() => setMenuAberto(true)} />
 
       <div className="p-4">
+        {erro && <MensagemErro texto={erro} onFechar={limparErro} />}
+
         <div className="mx-auto max-w-xl rounded-2xl bg-gray-800 px-4 py-3 flex flex-col gap-3">
           <GrupoSelector
             grupos={grupos}
@@ -56,14 +61,14 @@ export const FeedPage = () => {
             <PostagemForm usuarioId={usuarioId} muralId={grupoSelecionado.muralId} onPostar={carregarFeed} />
           )}
 
-          {grupos.length === 0 && (
+          {grupos.length === 0 && !erro && (
             <p className="text-sm text-gray-400">Você não participa de nenhum grupo ainda.</p>
           )}
         </div>
       </div>
 
       <main className="p-4 flex flex-col gap-3">
-        {posts.length === 0 && (
+        {posts.length === 0 && !erro && (
           <p className="text-gray-500 text-sm text-center mt-6">Nenhuma postagem ainda.</p>
         )}
         {posts.map((post) => {

@@ -4,7 +4,9 @@ import { buscarGruposDoUsuario, buildFotoGrupoUrl, type GrupoResumo } from "../s
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { MenuLateral } from "../../../components/menu-lateral";
 import { Navbar } from "../../../components/navbar";
+import { MensagemErro } from "../../../components/mensagem-erro";
 import { useLogout } from "../../../hooks/useLogout";
+import { useErrorHandler } from "../../../hooks/useErrorHandler";
 import { GrupoCard } from "../components/grupo-card";
 import { Fab } from "../components/fab";
 import { ModalEntrarConvite } from "../components/modal-entrar-convite";
@@ -17,13 +19,14 @@ export function GruposPage() {
   const [menuAberto, setMenuAberto] = useState(false);
   const [aba, setAba] = useState<Aba>("recentes");
   const [grupos, setGrupos] = useState<GrupoResumo[]>([]);
+  const { erro, capturarErro, limparErro } = useErrorHandler();
   const usuarioId = getUsuarioIdFromToken() ?? "";
   const [modalConviteAberto, setModalConviteAberto] = useState(false);
 
   useEffect(() => {
     buscarGruposDoUsuario(usuarioId)
       .then(setGrupos)
-      .catch((err) => console.error("Erro ao buscar grupos:", err));
+      .catch(capturarErro);
   }, [usuarioId]);
 
   function handleEntrou(novoGrupo: GrupoResumo) {
@@ -40,19 +43,21 @@ export function GruposPage() {
       <div className="flex p-4 gap-2">
         <button
           onClick={() => setAba("recentes")}
-          className={`flex-1 py-2 rounded-full text-sm font-bold uppercase tracking-widest transition-colors ${aba === "recentes" ? "bg-green-500 text-white" : "text-gray-400 hover:text-white"}`}
+          className={`flex-1 py-2 rounded-full text-sm font-bold uppercase tracking-widest transition-colors ${aba === "recentes" ? "bg-emerald-500 text-white" : "text-gray-400 hover:text-white"}`}
         >
           Recentes
         </button>
         <button
           onClick={() => setAba("anonimo")}
-          className={`flex-1 py-2 rounded-full text-sm font-bold uppercase tracking-widest transition-colors ${aba === "anonimo" ? "bg-green-500 text-white" : "text-gray-400 hover:text-white"}`}
+          className={`flex-1 py-2 rounded-full text-sm font-bold uppercase tracking-widest transition-colors ${aba === "anonimo" ? "bg-emerald-500 text-white" : "text-gray-400 hover:text-white"}`}
         >
           Anônimo
         </button>
       </div>
 
       <div className="flex flex-col gap-3 px-4 pb-24">
+        {erro && <MensagemErro texto={erro} onFechar={limparErro} />}
+
         {grupos.map((grupo) => (
           <GrupoCard
             key={grupo.id}
@@ -62,12 +67,12 @@ export function GruposPage() {
           />
         ))}
 
-        {grupos.length === 0 && (
+        {grupos.length === 0 && !erro && (
           <p className="text-gray-500 text-sm text-center mt-10">Você não participa de nenhum grupo ainda.</p>
         )}
       </div>
 
-      {modalConviteAberto && ( 
+      {modalConviteAberto && (
         <ModalEntrarConvite
           onFechar={() => setModalConviteAberto(false)}
           onEntrou={handleEntrou}
