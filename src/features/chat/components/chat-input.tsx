@@ -16,7 +16,7 @@ export function ChatInput({ onEnviar }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-3 px-4 py-3 bg-[#12111a] border-t border-[#1e1b2e]">
+    <form onSubmit={handleSubmit} className="flex items-center gap-3 px-4 py-3 bg-background border-t border-surface">
       <button type="button" className="text-gray-500 hover:text-gray-300 transition-colors shrink-0">
         <PhotoIcon className="size-6" />
       </button>

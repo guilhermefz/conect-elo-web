@@ -55,7 +55,7 @@ export function GlobalPage() {
   const [menuAberto, setMenuAberto] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#12111a] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Conectar" onMenuAbrir={() => setMenuAberto(true)} />
 
@@ -64,7 +64,7 @@ export function GlobalPage() {
 
         <div className="flex flex-col gap-3">
           {MOCK_POSTS.map((post) => (
-            <div key={post.id} className="bg-[#1e1b2e] rounded-2xl p-4 flex flex-col gap-2">
+            <div key={post.id} className="bg-surface rounded-2xl p-4 flex flex-col gap-2">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
                   <GlobeAltIcon className="size-5 text-white" />

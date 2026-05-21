@@ -4,9 +4,9 @@ import { useLogin } from "../hooks/use-login";
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoading } = useLogin();
+  const { login, isLoading, erro } = useLogin();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: { preventDefault(): void }) => {
     e.preventDefault();
     login({ email, password });
   };
@@ -37,9 +37,14 @@ export function LoginForm() {
         />
       </div>
 
+      {erro && (
+        <p className="text-red-500 text-sm text-center">{erro}</p>
+      )}
+
       <button
         type="submit"
-        className="mt-2 w-full rounded-md bg-blue-600 py-2 font-semibold text-white hover:bg-blue-700 active:scale-95 transition-transform"
+        disabled={isLoading}
+        className="mt-2 w-full rounded-md bg-blue-600 py-2 font-semibold text-white hover:bg-blue-700 active:scale-95 transition-transform disabled:opacity-60"
       >
         {isLoading ? "Entrando..." : "Entrar"}
       </button>

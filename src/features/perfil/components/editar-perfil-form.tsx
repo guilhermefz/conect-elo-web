@@ -7,7 +7,7 @@ const GENEROS = [
   { value: 2, label: "Prefiro não dizer" },
 ];
 
-const inputCls = "bg-[#1e1b2e] text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500";
+const inputCls = "bg-surface text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500";
 
 interface Props {
   form: AtualizarPerfilPayload;

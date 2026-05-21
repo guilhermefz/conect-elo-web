@@ -37,7 +37,7 @@ export function ModalEntrarConvite({ onFechar, onEntrou }: Props) {
                     onChange={(e) => setCodigo(e.target.value.toUpperCase())}
                     placeholder="Ex: A7BX3KM2"
                     maxLength={8}
-                    className="bg-[#12111a] text-white text-center text-xl font-bold tracking-widest rounded-xl px-4 py-3 outline-none border border-transparent focus:border-emerald-500 transition-colors placeholder:text-gray-600"
+                    className="bg-background text-white text-center text-xl font-bold tracking-widest rounded-xl px-4 py-3 outline-none border border-transparent focus:border-emerald-500 transition-colors placeholder:text-gray-600"
                 />
                 {erro && <p className="text-red-400 text-sm text-center">{erro}</p>}
                 <button

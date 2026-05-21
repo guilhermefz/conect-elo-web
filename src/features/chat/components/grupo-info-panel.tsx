@@ -48,12 +48,12 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
 
   return (
     <div
-      className={`absolute inset-0 bg-[#12111a] z-20 flex flex-col transition-transform duration-300 ${
+      className={`absolute inset-0 bg-background z-20 flex flex-col transition-transform duration-300 ${
         aberto ? "translate-x-0" : "translate-x-full"
       }`}
     >
       <ToastSucesso mensagem={toast} />
-      <div className="flex items-center justify-between px-4 py-4 border-b border-[#2d2a3e]">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-subtle">
         <p className="text-white font-bold text-sm">Informações do grupo</p>
         <button onClick={onFechar} className="text-gray-400 hover:text-white transition-colors">
           <XMarkIcon className="size-5" />
@@ -145,7 +145,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
 
               <div className="flex flex-col gap-2">
                 {detalhes.membros.map((membro) => (
-                  <div key={membro.usuarioId} className="flex items-center justify-between py-2 border-b border-[#2d2a3e] last:border-0">
+                  <div key={membro.usuarioId} className="flex items-center justify-between py-2 border-b border-subtle last:border-0">
                     <div className="flex items-center gap-3">
                       <div className="size-8 rounded-full bg-gray-700 flex items-center justify-center text-xs shrink-0">
                         🤝

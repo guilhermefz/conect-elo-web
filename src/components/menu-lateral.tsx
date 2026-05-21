@@ -50,7 +50,7 @@ export function MenuLateral({ aberto, onFechar, onSair }: Props) {
   ];
 
   return (
-    <div className={`fixed inset-0 z-50 bg-[#12111a] flex flex-col p-6 transition-transform duration-300 ease-in-out ${aberto ? "translate-x-0" : "-translate-x-full"}`}>
+    <div className={`fixed inset-0 z-50 bg-background flex flex-col p-6 transition-transform duration-300 ease-in-out ${aberto ? "translate-x-0" : "-translate-x-full"}`}>
       <div className="flex justify-end mb-6">
         <button onClick={onFechar} className="size-10 rounded-xl bg-gray-800 flex items-center justify-center text-white hover:bg-gray-700 transition-colors">
           <XMarkIcon className="size-5" />

@@ -11,7 +11,7 @@ export function GrupoTabs({ abaAtiva, onMudar, quantidadeEventos }: Props) {
   ];
 
   return (
-    <div className="flex bg-[#1e1b2e] border-b border-white/10">
+    <div className="flex bg-surface border-b border-white/10">
       {abas.map((aba) => (
         <button
           key={aba.key}
