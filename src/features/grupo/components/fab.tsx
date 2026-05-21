@@ -29,7 +29,7 @@ export function Fab({ opcoes }: Props) {
             <button
               key={opcao.label}
               onClick={() => handleClick(opcao)}
-              className="bg-[#1e1b2e] text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-md hover:bg-[#252236] transition-colors whitespace-nowrap"
+              className="bg-surface text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-md hover:bg-surface-hover transition-colors whitespace-nowrap"
             >
               {opcao.label}
             </button>

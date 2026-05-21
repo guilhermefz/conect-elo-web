@@ -32,7 +32,7 @@ export function GrupoForm({ onSubmit, loading = false, erro }: Props) {
           onChange={(e) => setNome(e.target.value)}
           placeholder="Nome do grupo"
           required
-          className="bg-[#1e1b2e] border border-[#2e2b42] rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
+          className="bg-surface border border-subtle rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
         />
       </FormField>
 
@@ -42,11 +42,11 @@ export function GrupoForm({ onSubmit, loading = false, erro }: Props) {
           onChange={(e) => setDescricao(e.target.value)}
           placeholder="Sobre o que é esse grupo?"
           rows={3}
-          className="bg-[#1e1b2e] border border-[#2e2b42] rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+          className="bg-surface border border-subtle rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
         />
       </FormField>
 
-      <div className="flex items-center justify-between bg-[#1e1b2e] border border-[#2e2b42] rounded-xl px-4 py-3">
+      <div className="flex items-center justify-between bg-surface border border-subtle rounded-xl px-4 py-3">
         <div>
           <p className="text-sm font-semibold text-gray-300">Privado</p>
           <p className="text-xs text-gray-500">Somente membros convidados podem entrar</p>

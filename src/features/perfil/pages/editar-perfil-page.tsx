@@ -39,7 +39,7 @@ export function EditarPerfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#12111a] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Editar Perfil" onMenuAbrir={() => setMenuAberto(true)} />
 

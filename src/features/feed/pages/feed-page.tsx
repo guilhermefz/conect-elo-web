@@ -40,7 +40,7 @@ export const FeedPage = () => {
   }, [usuarioId]);
 
   return (
-    <div className="min-h-screen bg-[#12111a]">
+    <div className="min-h-screen bg-background">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Murais" onMenuAbrir={() => setMenuAberto(true)} />
 

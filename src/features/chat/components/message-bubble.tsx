@@ -27,7 +27,7 @@ export function MessageBubble({ conteudo, autor, horario, enviada, mostrarAutor 
       ) : (
         <div className="size-7 shrink-0" />
       )}
-      <div className="bg-[#1e1b2e] text-white text-sm px-4 py-2 rounded-2xl rounded-bl-sm max-w-[75%]">
+      <div className="bg-surface text-white text-sm px-4 py-2 rounded-2xl rounded-bl-sm max-w-[75%]">
         {mostrarAutor && autor && (
           <p className="text-emerald-400 text-[10px] font-bold uppercase mb-1">{autor}</p>
         )}

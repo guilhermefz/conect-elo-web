@@ -114,7 +114,7 @@ export function EventosPage({ onMudarAba }: Props) {
                     className={`flex flex-col items-start gap-1 p-3 rounded-xl border transition-colors text-left ${
                       selecionado
                         ? "border-emerald-500 bg-emerald-500/10"
-                        : "border-white/10 bg-[#12111a] hover:border-white/20"
+                        : "border-white/10 bg-background hover:border-white/20"
                     }`}
                   >
                     <span className="text-2xl">{tipo.emoji}</span>
@@ -135,7 +135,7 @@ export function EventosPage({ onMudarAba }: Props) {
                 placeholder="Digite o nome do aniversariante"
                 value={nomeAniversariante}
                 onChange={(e) => setNomeAniversariante(e.target.value)}
-                className="bg-[#12111a] text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 autoFocus
               />
             </FormField>
@@ -145,14 +145,14 @@ export function EventosPage({ onMudarAba }: Props) {
             <input
               type="text"
               placeholder="Ex: Reunião semanal"
-              className="bg-[#12111a] text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             />
           </FormField>
 
           <FormField label="Data e hora">
             <input
               type="datetime-local"
-              className="bg-[#12111a] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 [color-scheme:dark]"
+              className="bg-background text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 [color-scheme:dark]"
             />
           </FormField>
 
@@ -160,7 +160,7 @@ export function EventosPage({ onMudarAba }: Props) {
             <input
               type="text"
               placeholder="Ex: Casa do João, Meet..."
-              className="bg-[#12111a] text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             />
           </FormField>
 
@@ -168,7 +168,7 @@ export function EventosPage({ onMudarAba }: Props) {
             <textarea
               rows={3}
               placeholder="Detalhes do evento..."
-              className="bg-[#12111a] text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
+              className="bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
             />
           </FormField>
 
