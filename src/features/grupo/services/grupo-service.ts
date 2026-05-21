@@ -1,5 +1,4 @@
 import api from "../../../lib/axios";
-import { API_URL } from "../../../lib/config";
 
 export function buildFotoGrupoUrl(path: string): string {
   return path;
