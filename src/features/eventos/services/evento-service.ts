@@ -13,13 +13,17 @@ export interface ExibirEvento {
 }
 
 export interface CriarAniversarioPayload {
+  titulo: string;
+  descricao?: string;
+  dataInicio?: string;
+  localizacao?: string;
+  grupoId: string;
+  nomeAniversariante: string;
+  idade?: number;
+  listaDesejos?: {
     titulo: string;
-    descricao?: string;
-    dataInicio?: string;
-    localizacao?: string;
-    grupoId: string;
-    nomeAniversariante: string;
-    idade?: number;
+    itens: { descricao: string; urlReference?: string }[];
+  };
 }
 
 export interface ExibirEventoResumo {
