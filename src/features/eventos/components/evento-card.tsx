@@ -1,15 +1,15 @@
 import type { ExibirEventoResumo } from "../services/evento-service";
 import { useNavigate } from "react-router-dom";
 
-const TIPO_MAP: Record<string, { emoji: string; label: string; badge: string }> = {
-    "0": { emoji: "🎁", label: "Amigo Secreto",           badge: "bg-blue-500/20 text-blue-300" },
-    "1": { emoji: "🍫", label: "Amigo Chocolate Sortudo", badge: "bg-amber-500/20 text-amber-300" },
-    "2": { emoji: "🎂", label: "Aniversário",             badge: "bg-pink-500/20 text-pink-300" },
-    "3": { emoji: "💍", label: "Casamento",               badge: "bg-purple-500/20 text-purple-300" },
+const TIPO_MAP: Record<string, { emoji: string; label: string; badge: string; gradient: string }> = {
+    "0": { emoji: "🎁", label: "Amigo Secreto",           badge: "bg-blue-500/20 text-blue-300",   gradient: "from-blue-900 to-blue-700" },
+    "1": { emoji: "🍫", label: "Amigo Chocolate Sortudo", badge: "bg-amber-500/20 text-amber-300", gradient: "from-amber-900 to-amber-700" },
+    "2": { emoji: "🎂", label: "Aniversário",             badge: "bg-pink-500/20 text-pink-300",   gradient: "from-pink-900 to-pink-700" },
+    "3": { emoji: "💍", label: "Casamento",               badge: "bg-purple-500/20 text-purple-300", gradient: "from-purple-900 to-purple-700" },
 };
 
-function formatarDia(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "");
+function formatarData(iso: string): string {
+  return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).replace(".", "");
 }
 
 function diasRestantes(iso: string): string {
@@ -28,30 +28,54 @@ interface Props {
 }
 
 export function EventoCard({ evento }: Props) {
-  const tipo = TIPO_MAP[String(evento.tipoEvento)] ?? { emoji: "🎉", label: String(evento.tipoEvento), badge: "bg-white/10 text-gray-300" };
   const navigate = useNavigate();
+  const tipo = TIPO_MAP[String(evento.tipoEvento)] ?? { emoji: "🎉", label: String(evento.tipoEvento), badge: "bg-white/10 text-gray-300", gradient: "from-gray-900 to-gray-700" };
 
    return (
-    <div onClick={() => navigate(`/eventos/${evento.id}`)}
-               className="mx-4 my-2 rounded-2xl bg-white/5 border border-white/10 p-4 flex flex-col gap-3 cursor-pointer active:opacity-70 transition-opacity">
-      <div className="flex items-center justify-between gap-2">
-        <span className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${tipo.badge}`}>
-          {tipo.emoji} {tipo.label}
-        </span>
-        {evento.dataInicio && (
-          <span className="text-gray-400 text-xs whitespace-nowrap">
-            {formatarDia(evento.dataInicio)} · {diasRestantes(evento.dataInicio)}
-          </span>
-        )}
-      </div>
+    <div
+      onClick={() => navigate(`/eventos/${evento.id}`)}
+      className="mx-4 my-2 rounded-2xl bg-white/5 border border-white/10 overflow-hidden cursor-pointer active:opacity-70 transition-opacity"
+    >
+      {/* Capa */}
+       {evento.fotoCapaUrl ? (
+         <img
+           src={evento.fotoCapaUrl}
+           alt={evento.titulo}
+           className="w-full h-36 object-cover"
+         />
+      ) : (
+        <div className={`w-full h-28 bg-gradient-to-br ${tipo.gradient} flex items-center justify-center`}>
+          <span className="text-5xl opacity-40">{tipo.emoji}</span>
+        </div>
+      )}
 
-      <div>
+      {/* Conteúdo */}
+      <div className="p-4 flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <span className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${tipo.badge}`}>
+            {tipo.emoji} {tipo.label}
+          </span>
+          {evento.dataInicio && (
+            <span className="text-gray-400 text-xs whitespace-nowrap">
+              {diasRestantes(evento.dataInicio)}
+            </span>
+          )}
+        </div>
+
         <p className="text-white font-bold text-base leading-snug">{evento.titulo}</p>
-        {(evento.localizacao || evento.descricao) && (
-          <p className="text-gray-400 text-sm mt-0.5 truncate">
-            {evento.localizacao ?? evento.descricao}
-          </p>
+
+        {evento.criadorNome && (
+          <p className="text-gray-500 text-xs">por {evento.criadorNome}</p>
         )}
+
+        <div className="flex flex-col gap-1 mt-0.5">
+          {evento.dataInicio && (
+            <p className="text-gray-400 text-xs">📅 {formatarData(evento.dataInicio)}</p>
+          )}
+          {evento.localizacao && (
+            <p className="text-gray-400 text-xs truncate">📍 {evento.localizacao}</p>
+          )}
+        </div>
       </div>
     </div>
   );

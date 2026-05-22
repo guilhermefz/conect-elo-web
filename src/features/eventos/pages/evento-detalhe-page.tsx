@@ -53,6 +53,9 @@ export function EventoDetalhePage() {
 
       {evento && tipo && (
         <div className="flex flex-col gap-6 px-4 py-6">
+          {evento.fotoCapaUrl && (
+            <img src={evento.fotoCapaUrl} alt={evento.titulo} className="w-full h-48 object-cover rounded-2xl" />
+          )}
           <div className="flex flex-col gap-3">
             <span className={`self-start flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${tipo.badge}`}>
               {tipo.emoji} {tipo.label}
@@ -67,6 +70,24 @@ export function EventoDetalhePage() {
                 <div>
                   <p className="text-gray-500 text-xs mb-0.5">Data do evento</p>
                   <p className="text-white text-sm capitalize">{formatarData(evento.dataInicio)}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+              <span className="text-xl">🗓️</span>
+              <div>
+                <p className="text-gray-500 text-xs mb-0.5">Criado em</p>
+                <p className="text-white text-sm capitalize">{formatarData(evento.dataCriacao)}</p>
+              </div>
+            </div>
+
+            {evento.criadorNome && (
+              <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+                <span className="text-xl">👤</span>
+                <div>
+                  <p className="text-gray-500 text-xs mb-0.5">Criado por</p>
+                  <p className="text-white text-sm">{evento.criadorNome}</p>
                 </div>
               </div>
             )}
@@ -91,6 +112,38 @@ export function EventoDetalhePage() {
               </div>
             )}
           </div>
+
+          {evento.listaDesejos && (
+            <div className="flex flex-col gap-3">
+              <h2 className="text-white font-semibold text-base flex items-center gap-2">
+                🎁 Lista de desejos
+                <span className="text-gray-500 text-xs font-normal">— {evento.listaDesejos.titulo}</span>
+              </h2>
+              <div className="flex flex-col gap-2">
+                {evento.listaDesejos.itens.map((item) => (
+                  <div key={item.id} className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <span className="text-lg mt-0.5">{item.reservadoPorId ? "✅" : "🎀"}</span>
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <p className="text-white text-sm">{item.descricao}</p>
+                      {item.urlReference && (
+                        <a
+                          href={item.urlReference}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 text-xs truncate hover:underline"
+                        >
+                          {item.urlReference}
+                        </a>
+                      )}
+                      {item.reservadoPorId && (
+                        <p className="text-gray-500 text-xs">Reservado</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

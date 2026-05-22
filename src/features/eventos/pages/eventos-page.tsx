@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Modal } from "../../../components/modal";
 import { FormField } from "../../../components/form-field";
-import { CriarAniversario, type ExibirEventoResumo, listarEventosPorGrupo } from "../services/evento-service";
+import { CriarAniversario, uploadFotoCapa, type ExibirEventoResumo, listarEventosPorGrupo } from "../services/evento-service";
 import { EventoCard } from "../components/evento-card";
 
 interface Props {
@@ -35,6 +35,8 @@ export function EventosPage({ onMudarAba }: Props) {
   const [enviando, setEnviando] = useState(false);
   const [eventos, setEventos] = useState<ExibirEventoResumo[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [fotoCapa, setFotoCapa] = useState<File | null>(null);
+  const [previewCapa, setPreviewCapa] = useState<string | null>(null);
 
   async function carregarEventos() {
     if (!grupoId) return;
@@ -68,6 +70,8 @@ export function EventosPage({ onMudarAba }: Props) {
     setDescricao("");
     setItensLista([]);
     setErro(null);
+    setFotoCapa(null);
+    setPreviewCapa(null);
   }
 
   function adicionarItem() {
@@ -82,6 +86,13 @@ export function EventosPage({ onMudarAba }: Props) {
     setItensLista(prev => prev.filter((_, i) => i !== index));
   }
 
+  function handleFotoCapa(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFotoCapa(file);
+    setPreviewCapa(URL.createObjectURL(file));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!grupoId) return;
@@ -94,7 +105,7 @@ export function EventosPage({ onMudarAba }: Props) {
 
     const itensFiltrados = itensLista.filter(i => i.trim());
     try {
-      await CriarAniversario({
+      const id = await CriarAniversario({
         titulo: `Aniversário de ${nomeAniversariante.trim()}`,
         grupoId,
         nomeAniversariante: nomeAniversariante.trim(),
@@ -107,8 +118,12 @@ export function EventosPage({ onMudarAba }: Props) {
           itens: itensFiltrados.map(i => ({ descricao: i.trim() })),
         } : undefined,
       });
-      handleFechar();
 
+      if (fotoCapa) {
+        await uploadFotoCapa(id.id, fotoCapa);
+      }
+
+      handleFechar();
       carregarEventos();
     } catch {
       setErro("Erro ao criar evento. Tente novamente.");
@@ -193,6 +208,33 @@ export function EventosPage({ onMudarAba }: Props) {
 
           {etapa === "aniversario" && (
             <>
+              <FormField label="Foto de capa (Opcional)">
+                <label className="cursor-pointer block">
+                  {previewCapa ? (
+                    <div className="relative">
+                      <img
+                        src={previewCapa}
+                        alt="Preview"
+                        className="w-full h-36 object-cover rounded-xl"
+                      />
+                      <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white px-2 py-1 rounded-full">
+                        Trocar
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="w-full h-36 rounded-xl border border-dashed border-white/20 flex flex-col items-center justify-center gap-2 text-gray-500 hover:border-white/40 hover:text-gray-400 transition-colors">
+                      <span className="text-2xl">🖼️</span>
+                      <span className="text-xs">Toque para adicionar uma capa</span>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFotoCapa}
+                  />
+                </label>
+              </FormField>
               <FormField label="Nome do aniversariante">
                 <input
                   type="text"
