@@ -40,12 +40,19 @@ export interface GrupoDetalhes {
   nome: string;
   descricao: string;
   codigoConvite?: string;
+  dataExpiracaoConvite?: string | null;
   dataCriacao: string;
   imgGrupo?: string;
   privado: boolean;
   proprietarioId: string;
   muralId: string;
   membros: MembroGrupoExibicao[];
+}
+
+export interface ConviteGerado {
+  codigo: string;
+  tipoExpiracao: number;
+  expiraEm: string | null;
 }
 
 export async function obterGrupoPorId(id: string): Promise<GrupoDetalhes> {
@@ -73,5 +80,10 @@ export async function atualizarFotoGrupo(grupoId: string, foto: File): Promise<s
 
 export async function entrarPorConvite(codigo: string) : Promise<GrupoResumo> {
   const response = await api.post(`/api/Grupo/EntrarPorConvite/${codigo}`);
+  return response.data.dados;
+}
+
+export async function gerarConvite(grupoId: string, tipoExpiracao: number): Promise<ConviteGerado> {
+  const response = await api.post(`/api/Grupo/${grupoId}/GerarConvite`, { tipoExpiracao });
   return response.data.dados;
 }

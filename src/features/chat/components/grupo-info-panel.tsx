@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { XMarkIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon, CalendarIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon, CalendarIcon, LinkIcon } from "@heroicons/react/24/outline";
 import { CameraIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
-import { atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes } from "../../grupo/services/grupo-service";
+import { atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes, type ConviteGerado } from "../../grupo/services/grupo-service";
 import { ToastSucesso } from "../../perfil/components/toast-sucesso";
+import { ModalGerarConvite } from "../../grupo/components/modal-gerar-convite";
 
 interface Props {
   grupoId: string;
@@ -18,6 +19,8 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
   const [erroFoto, setErroFoto] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [convite, setConvite] = useState<ConviteGerado | null>(null);
+  const [modalConviteAberto, setModalConviteAberto] = useState(false);
 
   useEffect(() => {
     if (!toast) return;
@@ -28,6 +31,23 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
   useEffect(() => {
     setFotoUrl(detalhes?.imgGrupo ? buildFotoGrupoUrl(detalhes.imgGrupo) : null);
   }, [detalhes?.imgGrupo]);
+
+  useEffect(() => {
+    if (detalhes?.codigoConvite) {
+      setConvite({
+        codigo: detalhes.codigoConvite,
+        tipoExpiracao: 0,
+        expiraEm: detalhes.dataExpiracaoConvite ?? null,
+      });
+    } else {
+      setConvite(null);
+    }
+  }, [detalhes?.codigoConvite, detalhes?.dataExpiracaoConvite]);
+
+  function conviteExpirado(expiraEm: string | null): boolean {
+  if (!expiraEm) return false;
+  return new Date(expiraEm) < new Date();
+}
 
   async function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -99,6 +119,12 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
                 <PencilSquareIcon className="size-4" />
                 Editar grupo
               </button>
+
+              <button onClick={() => setModalConviteAberto(true)}
+                className="flex items-center gap-2 border border-emerald-500 text-emerald-400 font-bold uppercase tracking-widest rounded-full px-6 py-2.5 text-xs hover:bg-emerald-500/10 transition-colors">
+                <LinkIcon className="size-4" /> Criar link de convite
+              </button>
+
             </div>
 
             {detalhes.descricao && (
@@ -127,10 +153,21 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
                 </p>
               </div>
 
-              {detalhes.codigoConvite && (
+              {convite && (
                 <div className="flex flex-col gap-1">
-                  <p className="text-gray-400 text-xs uppercase tracking-wide">Código de convite</p>
-                  <p className="text-emerald-400 text-sm font-mono">{detalhes.codigoConvite}</p>
+                  <p className="text-gray-400 text-xs uppercase tracking-wide">Convite</p>
+                  <p className="text-emerald-400 text-sm font-mono">{convite.codigo}</p>
+                  <p className="text-xs">
+                    {convite.expiraEm === null ? (
+                      <span className="text-gray-400">Sem expiração</span>
+                    ) : conviteExpirado(convite.expiraEm) ? (
+                      <span className="text-red-400">Expirado</span>
+                    ) : (
+                      <span className="text-gray-400">
+                        Expira em {new Date(convite.expiraEm).toLocaleString("pt-BR")}
+                      </span>
+                    )}
+                  </p>
                 </div>
               )}
             </div>
@@ -167,6 +204,13 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
           </div>
         )}
       </div>
+        {modalConviteAberto && (
+          <ModalGerarConvite
+            grupoId={grupoId}
+            onFechar={() => setModalConviteAberto(false)}
+            onGerado={(c) => { setConvite(c); setModalConviteAberto(false); }}
+          />
+        )}
     </div>
   );
 }
