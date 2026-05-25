@@ -1,11 +1,19 @@
+import { useState } from "react";
 import type { ExibirEventoResumo } from "../services/evento-service";
 import { useNavigate } from "react-router-dom";
+import { registrarParticipacao } from "../services/evento-service";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; badge: string; gradient: string }> = {
     "0": { emoji: "🎁", label: "Amigo Secreto",           badge: "bg-blue-500/20 text-blue-300",   gradient: "from-blue-900 to-blue-700" },
     "1": { emoji: "🍫", label: "Amigo Chocolate Sortudo", badge: "bg-amber-500/20 text-amber-300", gradient: "from-amber-900 to-amber-700" },
     "2": { emoji: "🎂", label: "Aniversário",             badge: "bg-pink-500/20 text-pink-300",   gradient: "from-pink-900 to-pink-700" },
     "3": { emoji: "💍", label: "Casamento",               badge: "bg-purple-500/20 text-purple-300", gradient: "from-purple-900 to-purple-700" },
+};
+
+const PARTICIPACAO_MAP: Record<number, { label: string; badge: string }> = {
+  1: { label: "Participação confirmada", badge: "bg-green-500/20 text-green-300" },
+  2: { label: "Sem participação",        badge: "bg-red-500/20 text-red-300" },
+  3: { label: "Participação pendente",   badge: "bg-yellow-500/20 text-yellow-300" },
 };
 
 function formatarData(iso: string): string {
@@ -29,7 +37,29 @@ interface Props {
 
 export function EventoCard({ evento }: Props) {
   const navigate = useNavigate();
-  const tipo = TIPO_MAP[String(evento.tipoEvento)] ?? { emoji: "🎉", label: String(evento.tipoEvento), badge: "bg-white/10 text-gray-300", gradient: "from-gray-900 to-gray-700" };
+  const tipo = TIPO_MAP[String(evento.tipoEvento)] ?? {
+    emoji: "🎉",
+    label: String(evento.tipoEvento),
+    badge: "bg-white/10 text-gray-300",
+    gradient: "from-gray-900 to-gray-700",
+  };
+
+  const [participacao, setParticipacao] = useState<number | null>(
+    evento.participacaoUsuario ?? null
+  );
+  const [enviando, setEnviando] = useState(false);
+
+  async function handleParticipacao(e: React.MouseEvent, status: number) {
+    e.stopPropagation();
+    if (enviando) return;
+    setEnviando(true);
+    try {
+      await registrarParticipacao(evento.id, status);
+      setParticipacao(status);
+    } finally {
+      setEnviando(false);
+    }
+  }
 
    return (
     <div
@@ -74,6 +104,38 @@ export function EventoCard({ evento }: Props) {
           )}
           {evento.localizacao && (
             <p className="text-gray-400 text-xs truncate">📍 {evento.localizacao}</p>
+          )}
+        </div>
+
+        <div className="mt-2 pt-2 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
+          {participacao !== null ? (
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${PARTICIPACAO_MAP[participacao]?.badge ?? "bg-white/10 text-gray-300"}`}>
+              {PARTICIPACAO_MAP[participacao]?.label ?? "Respondido"}
+            </span>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                disabled={enviando}
+                onClick={(e) => handleParticipacao(e, 1)}
+                className="flex-1 text-xs font-semibold py-1.5 rounded-full bg-green-500/20 text-green-300 active:opacity-70 transition-opacity disabled:opacity-40"
+              >
+                SIM
+              </button>
+              <button
+                disabled={enviando}
+                onClick={(e) => handleParticipacao(e, 2)}
+                className="flex-1 text-xs font-semibold py-1.5 rounded-full bg-red-500/20 text-red-300 active:opacity-70 transition-opacity disabled:opacity-40"
+              >
+                NÃO
+              </button>
+              <button
+                disabled={enviando}
+                onClick={(e) => handleParticipacao(e, 3)}
+                className="flex-1 text-xs font-semibold py-1.5 rounded-full bg-yellow-500/20 text-yellow-300 active:opacity-70 transition-opacity disabled:opacity-40"
+              >
+                TALVEZ
+              </button>
+            </div>
           )}
         </div>
       </div>

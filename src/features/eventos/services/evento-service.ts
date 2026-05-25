@@ -55,6 +55,7 @@ export interface ExibirEventoResumo {
     dataCriacao: string;
     fotoCapaUrl?: string;
     criadorNome?: string;
+    participacaoUsuario?: number | null;
 }
 
 export async function CriarAniversario(payload:CriarAniversarioPayload): Promise<{ id: string }> {
@@ -83,4 +84,8 @@ export async function uploadFotoCapa(eventoId: string, foto: File): Promise<void
   await api.post(`/api/Eventos/FotoCapa/${eventoId}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+}
+
+export async function registrarParticipacao(eventoId: string, status: number): Promise<void> {
+  await api.post(`/api/Eventos/${eventoId}/Participacao`, { status });
 }
