@@ -17,6 +17,8 @@ export interface ExibirItemListaDesejos {
   descricao: string;
   urlReference?: string;
   reservadoPorId?: string;
+  reservadoPorNome?: string;
+  reservadoPorFoto?: string;
 }
 
 export interface ExibirListaDesejos {
@@ -104,5 +106,15 @@ export async function registrarParticipacao(eventoId: string, status: number): P
 
 export async function listarConfirmacoes(eventoId: string): Promise<ConfirmacoesEvento> {
   const response = await api.get(`/api/Eventos/${eventoId}/Confirmacoes`);
+  return response.data.dados;
+}
+
+export async function selecionarItemListaDesejos(itemId: string): Promise<ExibirItemListaDesejos> {
+  const response = await api.put(`/api/Eventos/ListaDesejos/Selecionar/${itemId}`);
+  return response.data.dados;
+}
+
+export async function desselecionarItemListaDesejos(itemId: string): Promise<ExibirItemListaDesejos> {
+  const response = await api.delete(`/api/Eventos/ListaDesejos/Selecionar/${itemId}`);
   return response.data.dados;
 }

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { buscarEventoPorId, listarConfirmacoes, type ExibirEvento, type ConfirmacoesEvento } from "../services/evento-service";
+import { buscarEventoPorId, listarConfirmacoes, selecionarItemListaDesejos, desselecionarItemListaDesejos, type ExibirEvento, type ConfirmacoesEvento, type ExibirItemListaDesejos } from "../services/evento-service";
 import { PresencaEvento } from "../components/presenca-evento";
+import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; badge: string }> = {
   "0": { emoji: "🎁", label: "Amigo Secreto",           badge: "bg-blue-500/20 text-blue-300" },
@@ -25,6 +26,8 @@ export function EventoDetalhePage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
   const [confirmacoes, setConfirmacoes] = useState<ConfirmacoesEvento | null>(null);
+  const [itens, setItens] = useState<ExibirItemListaDesejos[]>([]);
+  const meuId = useMemo(() => getUsuarioIdFromToken() ?? "", []);
 
   useEffect(() => {
     if (!id) return;
@@ -32,10 +35,22 @@ export function EventoDetalhePage() {
       .then(([ev, conf]) => {
         setEvento(ev);
         setConfirmacoes(conf);
+        setItens(ev.listaDesejos?.itens ?? []);
       })
       .catch(() => setErro(true))
       .finally(() => setCarregando(false));
   }, [id]);
+
+  async function toggleItem(itemId: string, jaSelecionado: boolean) {
+    try {
+      const atualizado = jaSelecionado
+        ? await desselecionarItemListaDesejos(itemId)
+        : await selecionarItemListaDesejos(itemId);
+      setItens(prev => prev.map(i => i.id === itemId ? atualizado : i));
+    } catch {
+      // mantém estado anterior silenciosamente
+    }
+  }
 
   const tipo = evento ? (TIPO_MAP[String(evento.tipoEvento)] ?? { emoji: "🎉", label: String(evento.tipoEvento), badge: "bg-white/10 text-gray-300" }) : null;
 
@@ -122,34 +137,72 @@ export function EventoDetalhePage() {
             <PresencaEvento eventoId={evento.id} dados={confirmacoes} />
           )}
 
-          {evento.listaDesejos && (
+          {evento.listaDesejos && itens.length > 0 && (
             <div className="flex flex-col gap-3">
               <h2 className="text-white font-semibold text-base flex items-center gap-2">
                 🎁 Lista de desejos
                 <span className="text-gray-500 text-xs font-normal">— {evento.listaDesejos.titulo}</span>
               </h2>
               <div className="flex flex-col gap-2">
-                {evento.listaDesejos.itens.map((item) => (
-                  <div key={item.id} className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/10">
-                    <span className="text-lg mt-0.5">{item.reservadoPorId ? "✅" : "🎀"}</span>
-                    <div className="flex flex-col gap-1 min-w-0">
-                      <p className="text-white text-sm">{item.descricao}</p>
-                      {item.urlReference && (
-                        <a
-                          href={item.urlReference}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-400 text-xs truncate hover:underline"
-                        >
-                          {item.urlReference}
-                        </a>
+                {itens.map((item) => {
+                  const reservadoPorMim = item.reservadoPorId === meuId;
+                  const reservado = !!item.reservadoPorId;
+
+                  return (
+                    <div key={item.id} className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+                      <span className="text-lg shrink-0">{reservado ? "✅" : "🎀"}</span>
+
+                      <div className="flex flex-col gap-1 min-w-0 flex-1">
+                        <p className={`text-sm ${reservado && !reservadoPorMim ? "text-gray-400 line-through" : "text-white"}`}>
+                          {item.descricao}
+                        </p>
+                        {item.urlReference && (
+                          <a
+                            href={item.urlReference}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 text-xs truncate hover:underline"
+                          >
+                            {item.urlReference}
+                          </a>
+                        )}
+                      </div>
+
+                      {reservado && (
+                        <div className="shrink-0">
+                          {item.reservadoPorFoto ? (
+                            <img
+                              src={item.reservadoPorFoto}
+                              alt={item.reservadoPorNome ?? ""}
+                              className="w-7 h-7 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-7 h-7 rounded-full bg-purple-500 flex items-center justify-center text-xs font-bold text-white">
+                              {item.reservadoPorNome?.[0]?.toUpperCase() ?? "?"}
+                            </div>
+                          )}
+                        </div>
                       )}
-                      {item.reservadoPorId && (
-                        <p className="text-gray-500 text-xs">Reservado</p>
+
+                      {!reservado && (
+                        <button
+                          onClick={() => toggleItem(item.id, false)}
+                          className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                        >
+                          Selecionar
+                        </button>
+                      )}
+                      {reservadoPorMim && (
+                        <button
+                          onClick={() => toggleItem(item.id, true)}
+                          className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                        >
+                          ✕
+                        </button>
                       )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
