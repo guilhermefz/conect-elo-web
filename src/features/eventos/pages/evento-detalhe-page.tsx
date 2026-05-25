@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { buscarEventoPorId, type ExibirEvento } from "../services/evento-service";
+import { buscarEventoPorId, listarConfirmacoes, type ExibirEvento, type ConfirmacoesEvento } from "../services/evento-service";
+import { PresencaEvento } from "../components/presenca-evento";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; badge: string }> = {
   "0": { emoji: "🎁", label: "Amigo Secreto",           badge: "bg-blue-500/20 text-blue-300" },
@@ -23,11 +24,15 @@ export function EventoDetalhePage() {
   const [evento, setEvento] = useState<ExibirEvento | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
+  const [confirmacoes, setConfirmacoes] = useState<ConfirmacoesEvento | null>(null);
 
   useEffect(() => {
     if (!id) return;
-    buscarEventoPorId(id)
-      .then(setEvento)
+    Promise.all([buscarEventoPorId(id), listarConfirmacoes(id)])
+      .then(([ev, conf]) => {
+        setEvento(ev);
+        setConfirmacoes(conf);
+      })
       .catch(() => setErro(true))
       .finally(() => setCarregando(false));
   }, [id]);
@@ -112,6 +117,10 @@ export function EventoDetalhePage() {
               </div>
             )}
           </div>
+
+          {confirmacoes && (
+            <PresencaEvento eventoId={evento.id} dados={confirmacoes} />
+          )}
 
           {evento.listaDesejos && (
             <div className="flex flex-col gap-3">

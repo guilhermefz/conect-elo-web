@@ -11,9 +11,9 @@ const TIPO_MAP: Record<string, { emoji: string; label: string; badge: string; gr
 };
 
 const PARTICIPACAO_MAP: Record<number, { label: string; badge: string }> = {
-  1: { label: "Participação confirmada", badge: "bg-green-500/20 text-green-300" },
-  2: { label: "Sem participação",        badge: "bg-red-500/20 text-red-300" },
-  3: { label: "Participação pendente",   badge: "bg-yellow-500/20 text-yellow-300" },
+  1: { label: "✓ Vou!",    badge: "bg-green-500/20 text-green-300" },
+  2: { label: "✕ Não vou", badge: "bg-pink-500/20 text-pink-400" },
+  3: { label: "Talvez",    badge: "bg-yellow-500/20 text-yellow-300" },
 };
 
 function formatarData(iso: string): string {
@@ -107,34 +107,27 @@ export function EventoCard({ evento }: Props) {
           )}
         </div>
 
-        <div className="mt-2 pt-2 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
+         <div className="mt-2 pt-2 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
           {participacao !== null ? (
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${PARTICIPACAO_MAP[participacao]?.badge ?? "bg-white/10 text-gray-300"}`}>
               {PARTICIPACAO_MAP[participacao]?.label ?? "Respondido"}
             </span>
           ) : (
             <div className="flex gap-2">
-              <button
-                disabled={enviando}
-                onClick={(e) => handleParticipacao(e, 1)}
-                className="flex-1 text-xs font-semibold py-1.5 rounded-full bg-green-500/20 text-green-300 active:opacity-70 transition-opacity disabled:opacity-40"
-              >
-                SIM
-              </button>
-              <button
-                disabled={enviando}
-                onClick={(e) => handleParticipacao(e, 2)}
-                className="flex-1 text-xs font-semibold py-1.5 rounded-full bg-red-500/20 text-red-300 active:opacity-70 transition-opacity disabled:opacity-40"
-              >
-                NÃO
-              </button>
-              <button
-                disabled={enviando}
-                onClick={(e) => handleParticipacao(e, 3)}
-                className="flex-1 text-xs font-semibold py-1.5 rounded-full bg-yellow-500/20 text-yellow-300 active:opacity-70 transition-opacity disabled:opacity-40"
-              >
-                TALVEZ
-              </button>
+              {[
+                { status: 1, label: "✓ Vou!",    cls: "bg-green-500/20 text-green-300 active:bg-green-500/40" },
+                { status: 3, label: "Talvez",    cls: "bg-yellow-500/20 text-yellow-300 active:bg-yellow-500/40" },
+                { status: 2, label: "✕ Não vou", cls: "bg-pink-500/20 text-pink-400 active:bg-pink-500/40" },
+              ].map(({ status, label, cls }) => (
+                <button
+                  key={status}
+                  disabled={enviando}
+                  onClick={(e) => handleParticipacao(e, status)}
+                  className={`flex-1 text-xs font-semibold py-1.5 rounded-full transition-opacity disabled:opacity-40 ${cls}`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           )}
         </div>
