@@ -1,5 +1,17 @@
 import api from "../../../lib/axios"
 
+export interface ConfirmacaoMembro {
+  usuarioId: string;
+  nome: string;
+  fotoPerfil?: string;
+  status: number;
+}
+
+export interface ConfirmacoesEvento {
+  minhaConfirmacao: number | null;
+  confirmacoes: ConfirmacaoMembro[];
+}
+
 export interface ExibirItemListaDesejos {
   id: string;
   descricao: string;
@@ -55,6 +67,7 @@ export interface ExibirEventoResumo {
     dataCriacao: string;
     fotoCapaUrl?: string;
     criadorNome?: string;
+    participacaoUsuario?: number | null;
 }
 
 export async function CriarAniversario(payload:CriarAniversarioPayload): Promise<{ id: string }> {
@@ -83,4 +96,13 @@ export async function uploadFotoCapa(eventoId: string, foto: File): Promise<void
   await api.post(`/api/Eventos/FotoCapa/${eventoId}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+}
+
+export async function registrarParticipacao(eventoId: string, status: number): Promise<void> {
+  await api.post(`/api/Eventos/${eventoId}/Participacao`, { status });
+}
+
+export async function listarConfirmacoes(eventoId: string): Promise<ConfirmacoesEvento> {
+  const response = await api.get(`/api/Eventos/${eventoId}/Confirmacoes`);
+  return response.data.dados;
 }
