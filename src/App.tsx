@@ -14,6 +14,7 @@ import { ConfiguracoesPage } from "./features/configuracoes/pages/configuracoes-
 import { AjudaPage } from "./features/ajuda/pages/ajuda-page";
 import { SobrePage } from "./features/sobre/pages/sobre-page";
 import { GrupoLayout } from "./features/grupo/pages/grupo-layout";
+import { EventoEditarPage } from "./features/eventos/pages/evento-editar-page";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
 
         <Route path="/eventos" element={<EventosIndexPage />} />
         <Route path="/eventos/:id" element={<EventoDetalhePage />} />
+        <Route path="/eventos/:id/editar" element={<EventoEditarPage />} />
 
       </Routes>
     </BrowserRouter>

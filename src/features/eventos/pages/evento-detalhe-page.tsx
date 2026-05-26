@@ -4,6 +4,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { buscarEventoPorId, listarConfirmacoes, selecionarItemListaDesejos, desselecionarItemListaDesejos, type ExibirEvento, type ConfirmacoesEvento, type ExibirItemListaDesejos } from "../services/evento-service";
 import { PresencaEvento } from "../components/presenca-evento";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; badge: string }> = {
   "0": { emoji: "🎁", label: "Amigo Secreto",           badge: "bg-blue-500/20 text-blue-300" },
@@ -60,7 +61,16 @@ export function EventoDetalhePage() {
         <button onClick={() => navigate(-1)} className="size-9 flex items-center justify-center rounded-xl bg-white/5 text-white">
           <ArrowLeftIcon className="size-4" />
         </button>
-        <span className="text-white font-bold text-sm uppercase tracking-widest">Evento</span>
+        <span className="text-white font-bold text-sm uppercase tracking-widest flex-1">Evento</span>
+
+        {evento && evento.criador === meuId && (
+          <button
+            onClick={() => navigate(`/eventos/${id}/editar`)}
+            className="size-9 flex items-center justify-center rounded-xl bg-white/5 text-white"
+          >
+            <PencilSquareIcon className="size-4" />
+          </button>
+        )}
       </div>
 
       {carregando && (

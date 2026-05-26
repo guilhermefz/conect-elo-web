@@ -118,3 +118,12 @@ export async function desselecionarItemListaDesejos(itemId: string): Promise<Exi
   const response = await api.delete(`/api/Eventos/ListaDesejos/Selecionar/${itemId}`);
   return response.data.dados;
 }
+
+export async function adicionarItemListaDesejos( listaId: string, payload: { descricao: string; urlReference?: string }): Promise<ExibirItemListaDesejos> {
+  const response = await api.post(`/api/Eventos/ListaDesejos/${listaId}/Itens`, payload);
+  return response.data.dados;
+}
+
+export async function removerItemListaDesejos(itemId: string): Promise<void> {
+  await api.delete(`/api/Eventos/ListaDesejos/Itens/${itemId}`);
+}
