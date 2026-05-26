@@ -1,8 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { buscarEventoPorId, adicionarItemListaDesejos, removerItemListaDesejos, type ExibirEvento, type ExibirItemListaDesejos } from "../services/evento-service";
+import { buscarEventoPorId, editarEvento, adicionarItemListaDesejos, removerItemListaDesejos, type ExibirEvento, type ExibirItemListaDesejos } from "../services/evento-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
+import { uploadFotoCapa } from "../services/evento-service";
 
 export function EventoEditarPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,14 @@ export function EventoEditarPage() {
   const [itens, setItens] = useState<ExibirItemListaDesejos[]>([]);
   const [novoItem, setNovoItem] = useState({ descricao: "", urlReference: "" });
   const [adicionando, setAdicionando] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [titulo, setTitulo] = useState("");
+  const [idade, setIdade] = useState<string>("");
+  const [descricao, setDescricao] = useState("");
+  const [localizacao, setLocalizacao] = useState("");
+  const [dataInicio, setDataInicio] = useState("");
+  const [novaFoto, setNovaFoto] = useState<File | null>(null);
+  const [previewFoto, setPreviewFoto] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -23,8 +32,44 @@ export function EventoEditarPage() {
       }
       setEvento(ev);
       setItens(ev.listaDesejos?.itens ?? []);
+      setTitulo(ev.titulo);
+      setIdade(ev.idade?.toString() ?? "");
+      setDescricao(ev.descricao ?? "");
+      setLocalizacao(ev.localizacao ?? "");
+      setDataInicio(ev.dataInicio ? ev.dataInicio.slice(0, 16) : "");
     });
   }, [id, meuId]);
+
+  async function handleSalvar() {
+    if (!evento || !titulo.trim()) return;
+    setSalvando(true);
+    try {
+      await editarEvento({
+        id: evento.id,
+        titulo: titulo.trim(),
+        idade: idade ? Number(idade) : undefined,
+        descricao: descricao.trim() || undefined,
+        localizacao: localizacao.trim() || undefined,
+        dataInicio: dataInicio ? new Date(dataInicio).toISOString() : undefined,
+        status: evento.status,
+        tipoEvento: evento.tipoEvento,
+      });
+
+      if (novaFoto) {
+        await uploadFotoCapa(evento.id, novaFoto);
+      }
+      navigate(-1);
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  function handleSelecionarFoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setNovaFoto(file);
+    setPreviewFoto(URL.createObjectURL(file));
+  }
 
   async function handleAdicionarItem() {
     if (!novoItem.descricao.trim() || !evento?.listaDesejos) return;
@@ -61,16 +106,93 @@ export function EventoEditarPage() {
       </div>
 
       <div className="flex flex-col gap-6 px-4 py-6">
-        <h2 className="text-white font-semibold text-base">{evento.titulo}</h2>
+        <div className="flex flex-col gap-3">
+          <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest">Informações</p>
 
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xs">Foto de capa</label>
+            <label className="relative w-full h-36 rounded-2xl overflow-hidden border border-white/10 bg-white/5 cursor-pointer flex items-center justify-center">
+              {previewFoto || evento.fotoCapaUrl ? (
+                <img
+                  src={previewFoto ?? evento.fotoCapaUrl}
+                  alt="Capa"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-gray-500 text-sm">Toque para selecionar</span>
+              )}
+              <input type="file" accept="image/*" className="hidden" onChange={handleSelecionarFoto} />
+            </label>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xs">Título</label>
+            <input
+              type="text"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 outline-none focus:border-white/30"
+            />
+          </div>
+
+          {evento.tipoEvento === 2 && (
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-500 text-xs">Idade</label>
+              <input
+                type="number"
+                value={idade}
+                onChange={(e) => setIdade(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-white/30"
+              />
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xs">Descrição</label>
+            <textarea
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              rows={3}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 outline-none focus:border-white/30 resize-none"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xs">Local</label>
+            <input
+              type="text"
+              value={localizacao}
+              onChange={(e) => setLocalizacao(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 outline-none focus:border-white/30"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xs">Data e hora</label>
+            <input
+              type="datetime-local"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-white/30"
+            />
+          </div>
+
+          <button
+            onClick={handleSalvar}
+            disabled={salvando || !titulo.trim()}
+            className="w-full py-3 rounded-xl bg-white text-black font-bold text-sm disabled:opacity-40 transition-opacity"
+          >
+            {salvando ? "Salvando..." : "Salvar alterações"}
+          </button>
+        </div>
+
+        {/* Lista de desejos */}
         {evento.listaDesejos && (
           <div className="flex flex-col gap-3">
-            <h3 className="text-white font-semibold text-sm flex items-center gap-2">
-              🎁 Lista de desejos
-              <span className="text-gray-500 text-xs font-normal">— {evento.listaDesejos.titulo}</span>
-            </h3>
+            <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest">
+              Lista de desejos — {evento.listaDesejos.titulo}
+            </p>
 
-            {/* Itens existentes */}
             <div className="flex flex-col gap-2">
               {itens.map((item) => (
                 <div
@@ -120,7 +242,7 @@ export function EventoEditarPage() {
               <button
                 onClick={handleAdicionarItem}
                 disabled={adicionando || !novoItem.descricao.trim()}
-                className="w-full py-2.5 rounded-xl bg-white text-black font-bold text-sm disabled:opacity-40 transition-opacity"
+                className="w-full py-2.5 rounded-xl bg-white/10 text-white font-bold text-sm disabled:opacity-40 transition-opacity hover:bg-white/20"
               >
                 {adicionando ? "Adicionando..." : "Adicionar item"}
               </button>

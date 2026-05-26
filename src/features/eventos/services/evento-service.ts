@@ -72,6 +72,17 @@ export interface ExibirEventoResumo {
     participacaoUsuario?: number | null;
 }
 
+export interface EditarEventoPayload {
+  id: string;
+  titulo: string;
+  idade?: number;
+  descricao?: string;
+  dataInicio?: string;
+  localizacao?: string;
+  status: number;
+  tipoEvento: number;
+}
+
 export async function CriarAniversario(payload:CriarAniversarioPayload): Promise<{ id: string }> {
     const response = await api.post("/api/Eventos/Aniversario", payload)
     return { id: response.data.dados.id };
@@ -126,4 +137,8 @@ export async function adicionarItemListaDesejos( listaId: string, payload: { des
 
 export async function removerItemListaDesejos(itemId: string): Promise<void> {
   await api.delete(`/api/Eventos/ListaDesejos/Itens/${itemId}`);
+}
+
+export async function editarEvento(payload: EditarEventoPayload): Promise<void> {
+  await api.put("/api/Eventos/Editar", payload);
 }
