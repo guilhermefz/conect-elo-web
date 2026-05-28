@@ -87,3 +87,7 @@ export async function gerarConvite(grupoId: string, tipoExpiracao: number): Prom
   const response = await api.post(`/api/Grupo/${grupoId}/GerarConvite`, { tipoExpiracao });
   return response.data.dados;
 }
+
+export async function sairDoGrupo(grupoId:string): Promise<void> {
+  await api.delete(`/api/Grupo/${grupoId}/Sair`);
+}

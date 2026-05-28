@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon, CalendarIcon, LinkIcon } from "@heroicons/react/24/outline";
-import { CameraIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
-import { atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes, type ConviteGerado } from "../../grupo/services/grupo-service";
+import { CameraIcon, PencilSquareIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/solid";
+import { atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes, type ConviteGerado, sairDoGrupo } from "../../grupo/services/grupo-service";
 import { ToastSucesso } from "../../perfil/components/toast-sucesso";
 import { ModalGerarConvite } from "../../grupo/components/modal-gerar-convite";
+import { Button } from "../../../components/button";
+import { Modal } from "../../../components/modal";
 
 interface Props {
   grupoId: string;
@@ -21,6 +23,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [convite, setConvite] = useState<ConviteGerado | null>(null);
   const [modalConviteAberto, setModalConviteAberto] = useState(false);
+  const [confirmarSaida, setConfirmarSaida] = useState(false);
 
   useEffect(() => {
     if (!toast) return;
@@ -64,6 +67,12 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
     } finally {
       e.target.value = "";
     }
+  }
+
+  async function handleSairDoGrupo() {
+    await sairDoGrupo(grupoId);
+    setConfirmarSaida(false);
+    navigate("/grupos");
   }
 
   return (
@@ -200,10 +209,23 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
                   </div>
                 ))}
               </div>
+              <Button variante = "danger" className="mt-4" onClick={() => setConfirmarSaida(true)}>
+                <ArrowRightStartOnRectangleIcon  className="size-4" />
+                Sair do grupo
+              </Button>
             </div>
           </div>
         )}
       </div>
+      {confirmarSaida && (
+        <Modal titulo="Sair do grupo" onFechar={() => setConfirmarSaida(false)} variante="centro">
+          <p className="text-gray-400 text-sm">Tem certeza que deseja sair do grupo? Você precisará de um novo convite para entrar novamente.</p>
+          <div className="flex flex-col gap-2 mt-4">
+            <Button variante="danger" onClick={handleSairDoGrupo}>Sim, sair do grupo</Button>
+            <Button variante="primary" onClick={() => setConfirmarSaida(false)}>Cancelar</Button>
+          </div>
+        </Modal>
+      )}
         {modalConviteAberto && (
           <ModalGerarConvite
             grupoId={grupoId}
