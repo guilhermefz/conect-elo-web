@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { XMarkIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon, CalendarIcon, LinkIcon } from "@heroicons/react/24/outline";
 import { CameraIcon, PencilSquareIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/solid";
 import { atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes, type ConviteGerado, sairDoGrupo } from "../../grupo/services/grupo-service";
-import { ToastSucesso } from "../../perfil/components/toast-sucesso";
+import { Toast } from "../../../components/toast";
 import { ModalGerarConvite } from "../../grupo/components/modal-gerar-convite";
 import { Button } from "../../../components/button";
 import { Modal } from "../../../components/modal";
@@ -19,7 +19,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
   const navigate = useNavigate();
   const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [erroFoto, setErroFoto] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ mensagem: string; variante: "sucesso" | "erro" | "aviso" } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [convite, setConvite] = useState<ConviteGerado | null>(null);
   const [modalConviteAberto, setModalConviteAberto] = useState(false);
@@ -61,7 +61,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
       const novaUrl = `${buildFotoGrupoUrl(url)}?t=${Date.now()}`;
       setFotoUrl(null);
       setTimeout(() => setFotoUrl(novaUrl), 0);
-      setToast("Foto do grupo atualizada com sucesso!");
+      setToast({ mensagem: "Foto do grupo atualizada com sucesso!", variante: "sucesso" });
     } catch {
       setErroFoto("Erro ao enviar foto (máx. 5MB, JPG/PNG/WebP).");
     } finally {
@@ -70,9 +70,16 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
   }
 
   async function handleSairDoGrupo() {
-    await sairDoGrupo(grupoId);
-    setConfirmarSaida(false);
-    navigate("/grupos");
+    try{
+      await sairDoGrupo(grupoId);
+      setConfirmarSaida(false);
+      navigate("/grupos", {state: { mensagem: "Você saiu do grupo com sucesso!" }});
+    }
+    catch (error: any) {
+      const mensagem = error?.message ?? "Erro ao sair do grupo, tente novamente.";
+      setConfirmarSaida(false);
+      setToast({ mensagem, variante: "erro" });
+    }
   }
 
   return (
@@ -81,7 +88,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
         aberto ? "translate-x-0" : "translate-x-full"
       }`}
     >
-      <ToastSucesso mensagem={toast} />
+      <Toast mensagem={toast?.mensagem ?? null} variante={toast?.variante} />
       <div className="flex items-center justify-between px-4 py-4 border-b border-subtle">
         <p className="text-white font-bold text-sm">Informações do grupo</p>
         <button onClick={onFechar} className="text-gray-400 hover:text-white transition-colors">

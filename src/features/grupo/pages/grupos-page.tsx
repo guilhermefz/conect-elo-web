@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { buscarGruposDoUsuario, buildFotoGrupoUrl, type GrupoResumo } from "../services/grupo-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { MenuLateral } from "../../../components/menu-lateral";
@@ -10,11 +10,13 @@ import { useErrorHandler } from "../../../hooks/useErrorHandler";
 import { GrupoCard } from "../components/grupo-card";
 import { Fab } from "../components/fab";
 import { ModalEntrarConvite } from "../components/modal-entrar-convite";
+import { Toast } from "../../../components/toast";
 
 type Aba = "recentes" | "anonimo";
 
 export function GruposPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const logout = useLogout();
   const [menuAberto, setMenuAberto] = useState(false);
   const [aba, setAba] = useState<Aba>("recentes");
@@ -22,12 +24,25 @@ export function GruposPage() {
   const { erro, capturarErro, limparErro } = useErrorHandler();
   const usuarioId = getUsuarioIdFromToken() ?? "";
   const [modalConviteAberto, setModalConviteAberto] = useState(false);
+  const [toast, setToast] = useState<{ mensagem: string; variante: "sucesso" | "erro" | "aviso" } | null>(null);
 
   useEffect(() => {
     buscarGruposDoUsuario(usuarioId)
       .then(setGrupos)
       .catch(capturarErro);
   }, [usuarioId]);
+
+  useEffect(() => {
+    if (location.state?.mensagem){
+      setToast(location.state.mensagem);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   function handleEntrou(novoGrupo: GrupoResumo) {
     setModalConviteAberto(false);
@@ -37,6 +52,7 @@ export function GruposPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
+        <Toast mensagem={toast?.mensagem ?? null} variante={toast?.variante}/>
 
       <Navbar titulo="Conectar" onMenuAbrir={() => setMenuAberto(true)} />
 
