@@ -34,7 +34,7 @@ export function GruposPage() {
 
   useEffect(() => {
     if (location.state?.mensagem){
-      setToast(location.state.mensagem);
+      setToast({mensagem: location.state.mensagem, variante: "sucesso" });
     }
   }, []);
 
