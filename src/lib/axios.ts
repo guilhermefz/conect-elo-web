@@ -29,12 +29,17 @@ function traduzirErro(error: AxiosError, isLogin?: boolean): string {
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    const isLogin = error.config?.url?.includes('Autenticacao/Login')
+    const isLogin = error.config?.url?.includes('Autenticacao/Login');
+
     if (error.response?.status === 401 && !isLogin) {
       localStorage.removeItem('token')
       window.location.href = '/login'
     }
-    return Promise.reject(new Error(traduzirErro(error, isLogin)))
+
+    const data = error.response?.data as any;
+    const mensagem = data?.mensagem ?? traduzirErro(error, isLogin);
+
+    return Promise.reject(new Error(mensagem));
   }
 )
 
