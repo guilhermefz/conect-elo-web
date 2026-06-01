@@ -2,6 +2,7 @@ import { useState } from "react";
 import { gerarConvite, type ConviteGerado } from "../services/grupo-service";
 import { Modal } from "../../../components/modal";
 import { Square2StackIcon } from "@heroicons/react/24/outline";
+import { useToast } from "../../../components/toast";
 
 const OPCOES = [
   { valor: 0, label: "15 minutos" },
@@ -20,20 +21,20 @@ interface Props {
 
 export function ModalGerarConvite({ grupoId, onFechar, onGerado }: Props) {
   const [tipoExpiracao, setTipoExpiracao] = useState(4);
-  const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [conviteGerado, setConviteGerado] = useState<ConviteGerado | null>(null);
   const [copiado, setCopiado] = useState(false);
+  const toast = useToast();
 
   async function handleSubmit() {
-    setErro("");
     setCarregando(true);
     try {
       const convite = await gerarConvite(grupoId, tipoExpiracao);
       setConviteGerado(convite);
       onGerado(convite);
-    } catch {
-      setErro("Erro ao gerar convite. Tente novamente.");
+    } catch (e: any) {
+      onFechar();
+      toast.erro(e?.message ?? "Erro ao gerar convite. Tente novamente.");
     } finally {
       setCarregando(false);
     }
@@ -92,7 +93,6 @@ export function ModalGerarConvite({ grupoId, onFechar, onGerado }: Props) {
           </button>
         ))}
       </div>
-      {erro && <p className="text-red-400 text-sm text-center">{erro}</p>}
       <button
         type="button"
         disabled={carregando}

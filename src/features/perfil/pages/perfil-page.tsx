@@ -7,12 +7,13 @@ import { useLogout } from "../../../hooks/useLogout";
 import { useErrorHandler } from "../../../hooks/useErrorHandler";
 import { obterPerfil, atualizarFoto, buildFotoUrl } from "../services/perfil-service";
 import { PerfilCard } from "../components/perfil-card";
-import { Toast } from "../../../components/toast";
+import { useToast } from "../../../components/toast";
 
 export function PerfilPage() {
   const logout = useLogout();
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useToast();
   const [menuAberto, setMenuAberto] = useState(false);
   const [nome, setNome] = useState("");
   const [bio, setBio] = useState("");
@@ -20,7 +21,6 @@ export function PerfilPage() {
   const [carregando, setCarregando] = useState(true);
   const [erroFoto, setErroFoto] = useState("");
   const { erro, capturarErro, limparErro } = useErrorHandler();
-  const [toast, setToast] = useState<{ mensagem: string; variante: "sucesso" | "erro" | "aviso" } | null>(null);
 
   useEffect(() => {
     obterPerfil()
@@ -35,15 +35,9 @@ export function PerfilPage() {
 
   useEffect(() => {
     if (location.state?.mensagem) {
-      setToast(location.state.mensagem);
+      toast.sucesso(location.state.mensagem);
     }
   }, []);
-
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(t);
-  }, [toast]);
 
   async function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -55,7 +49,7 @@ export function PerfilPage() {
       setFotoUrl(null);
       setTimeout(() => setFotoUrl(novaUrl), 0);
       window.dispatchEvent(new CustomEvent("foto-perfil-atualizada", { detail: novaUrl }));
-      setToast({ mensagem: "Foto atualizada com sucesso!", variante: "sucesso" });
+      toast.sucesso("Foto atualizada com sucesso!");
     } catch {
       setErroFoto("Erro ao enviar foto (máx. 5MB, JPG/PNG/WebP).");
     } finally {
@@ -67,7 +61,6 @@ export function PerfilPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Perfil" onMenuAbrir={() => setMenuAberto(true)} />
-      <Toast mensagem={toast?.mensagem ?? null} variante={toast?.variante} />
 
       {erro && (
         <div className="p-4">

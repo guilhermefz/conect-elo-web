@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { XMarkIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon, CalendarIcon, LinkIcon } from "@heroicons/react/24/outline";
 import { CameraIcon, PencilSquareIcon, ArrowRightStartOnRectangleIcon, Square2StackIcon } from "@heroicons/react/24/solid";
 import { atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes, type ConviteGerado, sairDoGrupo } from "../../grupo/services/grupo-service";
-import { Toast } from "../../../components/toast";
+import { useToast } from "../../../components/toast";
 import { ModalGerarConvite } from "../../grupo/components/modal-gerar-convite";
 import { Button } from "../../../components/button";
 import { Modal } from "../../../components/modal";
@@ -17,19 +17,13 @@ interface Props {
 
 export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
   const navigate = useNavigate();
+  const toast = useToast();
   const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [erroFoto, setErroFoto] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ mensagem: string; variante: "sucesso" | "erro" | "aviso" } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [convite, setConvite] = useState<ConviteGerado | null>(null);
   const [modalConviteAberto, setModalConviteAberto] = useState(false);
   const [confirmarSaida, setConfirmarSaida] = useState(false);
-
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(t);
-  }, [toast]);
 
   useEffect(() => {
     setFotoUrl(detalhes?.imgGrupo ? buildFotoGrupoUrl(detalhes.imgGrupo) : null);
@@ -61,7 +55,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
       const novaUrl = `${buildFotoGrupoUrl(url)}?t=${Date.now()}`;
       setFotoUrl(null);
       setTimeout(() => setFotoUrl(novaUrl), 0);
-      setToast({ mensagem: "Foto do grupo atualizada com sucesso!", variante: "sucesso" });
+      toast.sucesso("Foto do grupo atualizada com sucesso!");
     } catch {
       setErroFoto("Erro ao enviar foto (máx. 5MB, JPG/PNG/WebP).");
     } finally {
@@ -78,7 +72,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
     catch (error: any) {
       const mensagem = error?.message ?? "Erro ao sair do grupo, tente novamente.";
       setConfirmarSaida(false);
-      setToast({ mensagem, variante: "erro" });
+      toast.erro(mensagem);
     }
   }
 
@@ -88,7 +82,6 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
         aberto ? "translate-x-0" : "translate-x-full"
       }`}
     >
-      <Toast mensagem={toast?.mensagem ?? null} variante={toast?.variante} />
       <div className="flex items-center justify-between px-4 py-4 border-b border-subtle">
         <p className="text-white font-bold text-sm">Informações do grupo</p>
         <button onClick={onFechar} className="text-gray-400 hover:text-white transition-colors">
@@ -178,7 +171,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(convite.codigo);
-                        setToast({ mensagem: "Código copiado!", variante: "sucesso" });
+                        toast.sucesso("Código copiado!");
                       }}
                       className="text-gray-400 hover:text-white transition-colors"
                       title="Copiar código"

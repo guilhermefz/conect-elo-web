@@ -7,7 +7,7 @@ import { Navbar } from "../../../components/navbar";
 import { MenuLateral } from "../../../components/menu-lateral";
 import { useLogout } from "../../../hooks/useLogout";
 import { obterGrupoPorId, buildFotoGrupoUrl, type GrupoDetalhes } from "../services/grupo-service";
-import { Toast } from "../../../components/toast";
+import { useToast } from "../../../components/toast";
 import { ChatPage } from "../../chat/pages/chat-page";
 import { EventosPage } from "../../eventos/pages/eventos-page";
 
@@ -22,7 +22,7 @@ export function GrupoLayout() {
   const [menuAberto, setMenuAberto] = useState(false);
   const [infoAberto, setInfoAberto] = useState(false);
   const [detalhes, setDetalhes] = useState<GrupoDetalhes | null>(null);
-  const [toast, setToast] = useState<{ mensagem: string; variante: "sucesso" | "erro" | "aviso" } | null>(null);
+  const toast = useToast();
   const [abaAtiva, setAbaAtiva] = useState<"chat" | "eventos">(
     pathname.includes("/eventos") ? "eventos" : "chat"
   );
@@ -35,15 +35,9 @@ export function GrupoLayout() {
 
   useEffect(() => {
     if (location.state?.mensagem) {
-      setToast(location.state.mensagem);
+      toast.sucesso(location.state.mensagem);
     }
   }, []);
-
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(t);
-  }, [toast]);
 
   useEffect(() => {
     setDetalhes(null);
@@ -56,7 +50,6 @@ export function GrupoLayout() {
     <div className="h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Conectar" onMenuAbrir={() => setMenuAberto(true)} />
-      <Toast mensagem={toast?.mensagem ?? null} variante={toast?.variante} />
       <div className="flex-1 flex flex-col relative overflow-hidden">
         <ChatHeader
           nome={nomeGrupo || `Grupo ${id}`}

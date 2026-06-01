@@ -15,9 +15,11 @@ import { AjudaPage } from "./features/ajuda/pages/ajuda-page";
 import { SobrePage } from "./features/sobre/pages/sobre-page";
 import { GrupoLayout } from "./features/grupo/pages/grupo-layout";
 import { EventoEditarPage } from "./features/eventos/pages/evento-editar-page";
+import { ToastProvider } from "./components/toast"
 
 export default function App() {
   return (
+    <ToastProvider>
     <BrowserRouter>
       <Routes>
 
@@ -51,5 +53,6 @@ export default function App() {
 
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   );
 }
