@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon, CalendarIcon, LinkIcon } from "@heroicons/react/24/outline";
-import { CameraIcon, PencilSquareIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/solid";
+import { CameraIcon, PencilSquareIcon, ArrowRightStartOnRectangleIcon, Square2StackIcon } from "@heroicons/react/24/solid";
 import { atualizarFotoGrupo, buildFotoGrupoUrl, type GrupoDetalhes, type ConviteGerado, sairDoGrupo } from "../../grupo/services/grupo-service";
 import { Toast } from "../../../components/toast";
 import { ModalGerarConvite } from "../../grupo/components/modal-gerar-convite";
@@ -171,8 +171,22 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
 
               {convite && (
                 <div className="flex flex-col gap-1">
-                  <p className="text-gray-400 text-xs uppercase tracking-wide">Convite</p>
-                  <p className="text-emerald-400 text-sm font-mono">{convite.codigo}</p>
+                  <p className="text-gray-400 text-xs uppercase tracking-wide">Código de convite</p>
+
+                  <div className="flex items-center gap-2">
+                    <p className="text-emerald-400 text-sm font-mono">{convite.codigo}</p>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(convite.codigo);
+                        setToast({ mensagem: "Código copiado!", variante: "sucesso" });
+                      }}
+                      className="text-gray-400 hover:text-white transition-colors"
+                      title="Copiar código"
+                    >
+                      <Square2StackIcon  className="size-4" />
+                    </button>
+                  </div>
+
                   <p className="text-xs">
                     {convite.expiraEm === null ? (
                       <span className="text-gray-400">Sem expiração</span>
@@ -237,7 +251,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
           <ModalGerarConvite
             grupoId={grupoId}
             onFechar={() => setModalConviteAberto(false)}
-            onGerado={(c) => { setConvite(c); setModalConviteAberto(false); }}
+            onGerado={(c) => setConvite(c)}
           />
         )}
     </div>
