@@ -20,7 +20,7 @@ export function useLogin() {
       const token = response.data?.dados?.accessToken;
       if (token) {
         localStorage.setItem("token", token);
-        navigate("/feed");
+        navigate("/home");
       }
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Erro ao fazer login.");

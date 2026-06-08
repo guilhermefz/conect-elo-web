@@ -72,6 +72,17 @@ export interface ExibirEventoResumo {
     participacaoUsuario?: number | null;
 }
 
+export interface EditarEventoPayload {
+  id: string;
+  titulo: string;
+  idade?: number;
+  descricao?: string;
+  dataInicio?: string;
+  localizacao?: string;
+  status: number;
+  tipoEvento: number;
+}
+
 export async function CriarAniversario(payload:CriarAniversarioPayload): Promise<{ id: string }> {
     const response = await api.post("/api/Eventos/Aniversario", payload)
     return { id: response.data.dados.id };
@@ -117,4 +128,17 @@ export async function selecionarItemListaDesejos(itemId: string): Promise<Exibir
 export async function desselecionarItemListaDesejos(itemId: string): Promise<ExibirItemListaDesejos> {
   const response = await api.delete(`/api/Eventos/ListaDesejos/Selecionar/${itemId}`);
   return response.data.dados;
+}
+
+export async function adicionarItemListaDesejos( listaId: string, payload: { descricao: string; urlReference?: string }): Promise<ExibirItemListaDesejos> {
+  const response = await api.post(`/api/Eventos/ListaDesejos/${listaId}/Itens`, payload);
+  return response.data.dados;
+}
+
+export async function removerItemListaDesejos(itemId: string): Promise<void> {
+  await api.delete(`/api/Eventos/ListaDesejos/Itens/${itemId}`);
+}
+
+export async function editarEvento(payload: EditarEventoPayload): Promise<void> {
+  await api.put("/api/Eventos/Editar", payload);
 }

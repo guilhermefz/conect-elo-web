@@ -7,7 +7,7 @@ import { Navbar } from "../../../components/navbar";
 import { MenuLateral } from "../../../components/menu-lateral";
 import { useLogout } from "../../../hooks/useLogout";
 import { obterGrupoPorId, buildFotoGrupoUrl, type GrupoDetalhes } from "../services/grupo-service";
-import { ToastSucesso } from "../../perfil/components/toast-sucesso";
+import { useToast } from "../../../components/toast";
 import { ChatPage } from "../../chat/pages/chat-page";
 import { EventosPage } from "../../eventos/pages/eventos-page";
 
@@ -18,12 +18,11 @@ export function GrupoLayout() {
     pathname: string;
   };
   const logout = useLogout();
+  const location = useLocation();
   const [menuAberto, setMenuAberto] = useState(false);
   const [infoAberto, setInfoAberto] = useState(false);
   const [detalhes, setDetalhes] = useState<GrupoDetalhes | null>(null);
-  const [toast, setToast] = useState<string | null>(
-    state?.sucesso ? "Grupo atualizado com sucesso!" : null
-  );
+  const toast = useToast();
   const [abaAtiva, setAbaAtiva] = useState<"chat" | "eventos">(
     pathname.includes("/eventos") ? "eventos" : "chat"
   );
@@ -35,10 +34,10 @@ export function GrupoLayout() {
   );
 
   useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(t);
-  }, [toast]);
+    if (location.state?.mensagem) {
+      toast.sucesso(location.state.mensagem);
+    }
+  }, []);
 
   useEffect(() => {
     setDetalhes(null);
@@ -51,7 +50,6 @@ export function GrupoLayout() {
     <div className="h-screen bg-background flex flex-col">
       <MenuLateral aberto={menuAberto} onFechar={() => setMenuAberto(false)} onSair={logout} />
       <Navbar titulo="Conectar" onMenuAbrir={() => setMenuAberto(true)} />
-      <ToastSucesso mensagem={toast} />
       <div className="flex-1 flex flex-col relative overflow-hidden">
         <ChatHeader
           nome={nomeGrupo || `Grupo ${id}`}

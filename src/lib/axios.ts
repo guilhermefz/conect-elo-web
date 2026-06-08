@@ -30,11 +30,15 @@ api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     const isLogin = error.config?.url?.includes('Autenticacao/Login')
-    if (error.response?.status === 401 && !isLogin) {
+    const data = error.response?.data as any
+    const mensagem = data?.mensagem ?? traduzirErro(error, isLogin)
+
+    if (error.response?.status === 401 && !isLogin && !data?.mensagem) {
       localStorage.removeItem('token')
       window.location.href = '/login'
     }
-    return Promise.reject(new Error(traduzirErro(error, isLogin)))
+
+    return Promise.reject(new Error(mensagem))
   }
 )
 

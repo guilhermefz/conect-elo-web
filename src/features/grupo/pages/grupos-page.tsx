@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { buscarGruposDoUsuario, buildFotoGrupoUrl, type GrupoResumo } from "../services/grupo-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { MenuLateral } from "../../../components/menu-lateral";
@@ -10,11 +10,15 @@ import { useErrorHandler } from "../../../hooks/useErrorHandler";
 import { GrupoCard } from "../components/grupo-card";
 import { Fab } from "../components/fab";
 import { ModalEntrarConvite } from "../components/modal-entrar-convite";
+import { useToast } from "../../../components/toast";
 
 type Aba = "recentes" | "anonimo";
 
 export function GruposPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const toast = useToast();
+  const toastExibido = useRef(false);
   const logout = useLogout();
   const [menuAberto, setMenuAberto] = useState(false);
   const [aba, setAba] = useState<Aba>("recentes");
@@ -22,12 +26,20 @@ export function GruposPage() {
   const { erro, capturarErro, limparErro } = useErrorHandler();
   const usuarioId = getUsuarioIdFromToken() ?? "";
   const [modalConviteAberto, setModalConviteAberto] = useState(false);
+  
 
   useEffect(() => {
     buscarGruposDoUsuario(usuarioId)
       .then(setGrupos)
       .catch(capturarErro);
   }, [usuarioId]);
+
+  useEffect(() => {
+    if (location.state?.mensagem && !toastExibido.current){
+      toastExibido.current = true;
+      toast.sucesso(location.state.mensagem);
+    }
+  }, []);
 
   function handleEntrou(novoGrupo: GrupoResumo) {
     setModalConviteAberto(false);
