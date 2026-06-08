@@ -56,6 +56,8 @@ export default function App() {
             <Route path="/eventos/:id" element={<EventoDetalhePage />} />
             <Route path="/eventos/:id/editar" element={<EventoEditarPage />} />
 
+            <Route path="/agenda" element={<AgendaPage />} />
+
           </Routes>
         </BrowserRouter>
       </SignalRProvider> 
