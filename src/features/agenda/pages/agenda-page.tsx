@@ -3,7 +3,6 @@ import { MenuLateral } from "../../../components/menu-lateral"
 import { useLogout } from "../../../hooks/useLogout"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
 import { Bars3Icon } from "@heroicons/react/24/outline"
-import { useNavigate } from "react-router-dom"
 
 type TipoEvento = "evento" | "sorteio" | "prazo" | "lembrete"
 
