@@ -40,7 +40,7 @@ export function MenuLateral({ aberto, onFechar, onSair }: Props) {
   }, []);
 
   const itens: MenuItem[] = [
-    { label: "Murais", icon: HomeIcon, ativo: pathname === "/feed", onClick: () => { onFechar(); navigate("/feed"); } },
+    { label: "Home", icon: HomeIcon, ativo: pathname === "/home", onClick: () => { onFechar(); navigate("/home"); } },
     { label: "Global", icon: GlobeAltIcon, ativo: pathname === "/global", onClick: () => { onFechar(); navigate("/global"); } },
     { label: "Chats", icon: ChatBubbleLeftIcon, ativo: pathname === "/grupos", onClick: () => { onFechar(); navigate("/grupos"); } },
     { label: "Avisos", icon: BellIcon, ativo: pathname === "/avisos", onClick: () => { onFechar(); navigate("/avisos"); } },

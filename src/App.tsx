@@ -17,6 +17,8 @@ import { GrupoLayout } from "./features/grupo/pages/grupo-layout";
 import { EventoEditarPage } from "./features/eventos/pages/evento-editar-page";
 import { ToastProvider } from "./components/toast"
 import { SignalRProvider } from "./hooks/signalr-context";
+import { HomePage } from "./features/home/pages/home-page";
+import { AgendaPage } from "./features/agenda/pages/agenda-page";
 
 export default function App() {
   return (
@@ -29,7 +31,8 @@ export default function App() {
 
             <Route path="/login" element={<LoginPage />} />
 
-            <Route path="/feed" element={<FeedPage />} />
+            {/* <Route path="/feed" element={<FeedPage />} />  //OBSOLETO*/}
+            <Route path="/home" element={<HomePage />} />
 
             <Route path="/grupos" element={<GruposPage />} />
             <Route path="/grupos/novo" element={<NovoGrupoPage />} />
