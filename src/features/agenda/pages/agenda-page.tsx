@@ -40,7 +40,6 @@ const hoje = new Date()
 
 export function AgendaPage() {
   const logout = useLogout()
-  const navigate = useNavigate()
   const [menuAberto, setMenuAberto] = useState(false)
   const [ano, setAno] = useState(hoje.getFullYear())
   const [mes, setMes] = useState(hoje.getMonth())
