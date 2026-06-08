@@ -26,13 +26,24 @@ export function SignalRProvider({ children }: { children: React.ReactNode }) {
       .build()
 
     connectionRef.current = connection
+    let deveParar = false
 
     connection.start()
-      .then(() => setConectado(true))
+      .then(() =>  {
+        if (deveParar) {
+          connection.stop()
+        } else {
+          setConectado(true)
+        }
+      })
       .catch(console.error)
 
     return () => {
-      connection.stop()
+      deveParar = true
+      
+      if (connection.state === signalR.HubConnectionState.Connected) {
+        connection.stop()
+      }
     }
   }, [])
 
