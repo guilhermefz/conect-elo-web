@@ -16,5 +16,9 @@ export async function listarAvisos(): Promise<NotificacaoDto[]> {
 }
 
 export async function marcarComoLido(id:string): Promise<void> {
-    await api.put(`/api/Notificacoes/${id}/Marcar`)
+    await api.put(`/api/Notificacoes?id=${id}`)
 }
+
+export async function marcarTodasComoLidas(): Promise<void> {
+    await api.put("/api/Notificacoes/marcar-todas")
+} 
