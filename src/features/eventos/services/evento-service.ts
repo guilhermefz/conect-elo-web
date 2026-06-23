@@ -43,6 +43,10 @@ export interface ExibirEvento {
   nomeAniversariante?: string;
   idade?: number;
   listaDesejos?: ExibirListaDesejos;
+  dataSorteio?: string;
+  statusSorteio?: number;
+  sorteado?: boolean;
+  dataExecucaoSorteio?: string;
 }
 
 export interface CriarAniversarioPayload {
@@ -156,4 +160,21 @@ export async function removerItemListaDesejos(itemId: string): Promise<void> {
 
 export async function editarEvento(payload: EditarEventoPayload): Promise<void> {
   await api.put("/api/Eventos/Editar", payload);
+}
+
+export interface SorteioExecutadoResult {
+  eventoId: string;
+  dataExecucao: string;
+  totalPares: number;
+  participantesIds: string[];
+}
+
+export async function sortearAgora(eventoId: string): Promise<SorteioExecutadoResult> {
+  const response = await api.post(`/api/AmigoSecreto/${eventoId}/SortearAgora`);
+  return response.data.dados;
+}
+
+export async function alterarDataSorteio(eventoId: string, novaData: string): Promise<{ jobId: string }> {
+  const response = await api.put(`/api/AmigoSecreto/${eventoId}/AlterarData`, { novaData });
+  return response.data.dados;
 }

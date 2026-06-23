@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { buscarEventoPorId, listarConfirmacoes, selecionarItemListaDesejos, desselecionarItemListaDesejos, type ExibirEvento, type ConfirmacoesEvento, type ExibirItemListaDesejos } from "../services/evento-service";
 import { PresencaEvento } from "../components/presenca-evento";
+import { AmigoSecretoSorteiosPainel } from "../components/amigo-secreto-sorteio-painel";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 
@@ -145,6 +146,18 @@ export function EventoDetalhePage() {
 
           {confirmacoes && (
             <PresencaEvento eventoId={evento.id} dados={confirmacoes} />
+          )}
+
+          {evento.tipoEvento === 0 && evento.criador === meuId && (
+            <div className="flex flex-col gap-3">
+              <h2 className="text-white font-semibold text-base flex items-center gap-2">
+                🎯 Gerenciar sorteio
+              </h2>
+              <AmigoSecretoSorteiosPainel
+                evento={evento}
+                onSorteioExecutado={setEvento}
+              />
+            </div>
           )}
 
           {evento.listaDesejos && itens.length > 0 && (
