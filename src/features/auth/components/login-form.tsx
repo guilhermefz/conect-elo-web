@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { FormField } from "../../../components/form-field";
+import { Button } from "../../../components/button";
 import { useLogin } from "../hooks/use-login";
 
 export function LoginForm() {
@@ -6,48 +8,45 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const { login, isLoading, erro } = useLogin();
 
-  const handleSubmit = (e: { preventDefault(): void }) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login({ email, password });
   };
 
+  const inputClass =
+    "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:border-emerald-500 focus:outline-none transition-colors";
+
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">E-mail</label>
+      <FormField label="E-mail" erro={undefined}>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           placeholder="seu@email.com"
           required
         />
-      </div>
+      </FormField>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Senha</label>
+      <FormField label="Senha" erro={undefined}>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:outline-none"
-          placeholder="******"
+          className={inputClass}
+          placeholder="••••••"
           required
         />
-      </div>
+      </FormField>
 
       {erro && (
-        <p className="text-red-500 text-sm text-center">{erro}</p>
+        <p className="text-red-400 text-sm text-center">{erro}</p>
       )}
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="mt-2 w-full rounded-md bg-blue-600 py-2 font-semibold text-white hover:bg-blue-700 active:scale-95 transition-transform disabled:opacity-60"
-      >
+      <Button disabled={isLoading} className="mt-2 w-full justify-center">
         {isLoading ? "Entrando..." : "Entrar"}
-      </button>
+      </Button>
     </form>
   );
 }
