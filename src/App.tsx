@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { EventosIndexPage } from "./features/eventos/pages/eventos-index-page";
 import { EventoDetalhePage } from "./features/eventos/pages/evento-detalhe-page";
 import { LoginPage } from "./features/auth/pages/login-page";
+import { RegistroPage } from "./features/auth/pages/registro-page";
 import { GruposPage } from "./features/grupo/pages/grupos-page";
 import { NovoGrupoPage } from "./features/grupo/pages/novo-grupo-page";
 import { AvisosPage } from "./features/avisos/pages/avisos-page";
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/login" replace />} />
 
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/registro" element={<RegistroPage />} />
 
             {/* <Route path="/feed" element={<FeedPage />} />  //OBSOLETO*/}
             <Route path="/home" element={<HomePage />} />
