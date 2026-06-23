@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { LoginForm } from "../components/login-form";
 
 export function LoginPage() {
@@ -19,7 +20,10 @@ export function LoginPage() {
         </section>
 
         <footer className="text-center text-sm text-gray-500">
-          Ainda não tem conta? <a href="#" className="font-semibold text-blue-600 hover:underline">Registe-se</a>
+          Ainda não tem conta?{" "}
+          <Link to="/registro" className="font-semibold text-blue-600 hover:underline">
+            Registre-se
+          </Link>
         </footer>
       </div>
     </main>
