@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Modal } from "../../../components/modal";
 import { FormField } from "../../../components/form-field";
-import { CriarAniversario, uploadFotoCapa, type ExibirEventoResumo, listarEventosPorGrupo } from "../services/evento-service";
+import { CriarAniversario, CriarAmigoSecreto, uploadFotoCapa, type ExibirEventoResumo, listarEventosPorGrupo } from "../services/evento-service";
 import { EventoCard } from "../components/evento-card";
+import { AniversarioForm, type AniversarioData } from "../components/aniversario-form";
+import { AmigoSecretoForm, type AmigoSecretoData } from "../components/amigo-secreto-form";
 
 interface Props {
   onMudarAba: (aba: "chat" | "eventos") => void;
@@ -19,24 +20,33 @@ const TIPOS_EVENTO = [
 
 type TipoEvento = (typeof TIPOS_EVENTO)[number]["key"];
 
+const ANIVERSARIO_INICIAL: AniversarioData = {
+  titulo: "", descricao: "", dataInicio: "", localizacao: "",
+  fotoCapa: null, previewCapa: null,
+  nomeAniversariante: "", idade: "", itensLista: [],
+};
+
+const AMIGO_SECRETO_INICIAL: AmigoSecretoData = {
+  titulo: "", descricao: "", dataInicio: "", localizacao: "",
+  fotoCapa: null, previewCapa: null,
+  valor: "", dataSorteio: "",
+};
+
 export function EventosPage({ onMudarAba }: Props) {
   const touchStartX = useRef(0);
+  const { id: grupoId } = useParams<{ id: string }>();
+
   const [modalAberto, setModalAberto] = useState(false);
   const [tipoSelecionado, setTipoSelecionado] = useState<TipoEvento | null>(null);
-  const { id: grupoId } = useParams<{ id: string }>();
-  const [etapa, setEtapa] = useState<"tipo" | "aniversario">("tipo");
-  const [nomeAniversariante, setNomeAniversariante] = useState("");
-  const [idade, setIdade] = useState("");
-  const [dataInicio, setDataInicio] = useState("");
-  const [localizacao, setLocalizacao] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [itensLista, setItensLista] = useState<string[]>([]);
+  const [etapa, setEtapa] = useState<"tipo" | TipoEvento>("tipo");
+
+  const [aniversarioData, setAniversarioData] = useState<AniversarioData>(ANIVERSARIO_INICIAL);
+  const [amigoSecretoData, setAmigoSecretoData] = useState<AmigoSecretoData>(AMIGO_SECRETO_INICIAL);
+
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [eventos, setEventos] = useState<ExibirEventoResumo[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [fotoCapa, setFotoCapa] = useState<File | null>(null);
-  const [previewCapa, setPreviewCapa] = useState<string | null>(null);
 
   async function carregarEventos() {
     if (!grupoId) return;
@@ -63,72 +73,93 @@ export function EventosPage({ onMudarAba }: Props) {
     setModalAberto(false);
     setEtapa("tipo");
     setTipoSelecionado(null);
-    setNomeAniversariante("");
-    setIdade("");
-    setDataInicio("");
-    setLocalizacao("");
-    setDescricao("");
-    setItensLista([]);
+    setAniversarioData(ANIVERSARIO_INICIAL);
+    setAmigoSecretoData(AMIGO_SECRETO_INICIAL);
     setErro(null);
-    setFotoCapa(null);
-    setPreviewCapa(null);
   }
 
-  function adicionarItem() {
-    setItensLista(prev => [...prev, ""]);
+  function obterTituloModal() {
+    if (etapa === "tipo") return "Novo Evento";
+    if (etapa === "aniversario") return "Aniversário 🎂";
+    if (etapa === "amigo-secreto") return "Amigo Secreto 🎁";
+    return "Novo Evento";
   }
 
-  function atualizarItem(index: number, valor: string) {
-    setItensLista(prev => prev.map((item, i) => i === index ? valor : item));
+  function handleChangeAniversario(field: keyof AniversarioData, value: string | File | null | string[]) {
+    setAniversarioData((prev) => ({ ...prev, [field]: value }));
   }
 
-  function removerItem(index: number) {
-    setItensLista(prev => prev.filter((_, i) => i !== index));
+  function handleChangeAmigoSecreto(field: keyof AmigoSecretoData, value: string | File | null) {
+    setAmigoSecretoData((prev) => ({ ...prev, [field]: value }));
   }
 
-  function handleFotoCapa(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setFotoCapa(file);
-    setPreviewCapa(URL.createObjectURL(file));
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmitAniversario(e: React.FormEvent) {
     e.preventDefault();
     if (!grupoId) return;
-    if (!nomeAniversariante.trim()) {
+    if (!aniversarioData.nomeAniversariante.trim()) {
       setErro("Informe o nome do aniversariante.");
       return;
     }
     setEnviando(true);
     setErro(null);
-
-    const itensFiltrados = itensLista.filter(i => i.trim());
+    const itensFiltrados = aniversarioData.itensLista.filter((i) => i.trim());
     try {
       const id = await CriarAniversario({
-        titulo: `Aniversário de ${nomeAniversariante.trim()}`,
+        titulo: aniversarioData.titulo.trim() || `Aniversário de ${aniversarioData.nomeAniversariante.trim()}`,
         grupoId,
-        nomeAniversariante: nomeAniversariante.trim(),
-        idade: idade ? Number(idade) : undefined,
-        dataInicio: dataInicio ? new Date(dataInicio).toISOString() : undefined,
-        localizacao: localizacao.trim() || undefined,
-        descricao: descricao.trim() || undefined,
+        nomeAniversariante: aniversarioData.nomeAniversariante.trim(),
+        idade: aniversarioData.idade ? Number(aniversarioData.idade) : undefined,
+        dataInicio: aniversarioData.dataInicio ? new Date(aniversarioData.dataInicio).toISOString() : undefined,
+        localizacao: aniversarioData.localizacao.trim() || undefined,
+        descricao: aniversarioData.descricao.trim() || undefined,
         listaDesejos: itensFiltrados.length > 0 ? {
           titulo: "Lista de Desejos",
-          itens: itensFiltrados.map(i => ({ descricao: i.trim() })),
+          itens: itensFiltrados.map((i) => ({ descricao: i.trim() })),
         } : undefined,
       });
-
-      if (fotoCapa) {
-        await uploadFotoCapa(id.id, fotoCapa);
+      if (aniversarioData.fotoCapa) {
+        await uploadFotoCapa(id.id, aniversarioData.fotoCapa);
       }
-
       handleFechar();
       carregarEventos();
     } catch {
       setErro("Erro ao criar evento. Tente novamente.");
     } finally {
       setEnviando(false);
+    }
+  }
+
+  async function handleSubmitAmigoSecreto(e: React.FormEvent) {
+    e.preventDefault();
+    if (!grupoId) return;
+    if (!amigoSecretoData.titulo.trim()) {
+      setErro("Informe o título do evento.");
+      return;
+    }
+    setEnviando(true)
+    setErro(null)
+    try{
+    const id = await CriarAmigoSecreto({
+        titulo: amigoSecretoData.titulo.trim(),
+        grupoId,
+        dataInicio: amigoSecretoData.dataInicio ? new Date(amigoSecretoData.dataInicio).toISOString() : undefined,
+        localizacao: amigoSecretoData.localizacao.trim() || undefined,
+        descricao: amigoSecretoData.descricao.trim() || undefined,
+        valor: amigoSecretoData.valor.trim(),
+        dataSorteio: amigoSecretoData.dataSorteio
+          ? new Date(amigoSecretoData.dataSorteio).toISOString()
+          :undefined,
+    });
+    if (amigoSecretoData.fotoCapa) {
+      await uploadFotoCapa(id.id, amigoSecretoData.fotoCapa)
+    }
+    handleFechar();
+    carregarEventos();
+  } catch {
+      setErro("Criação de amigo secreto ainda não implementada.");
+    }
+    finally {
+      setEnviando(false)
     }
   }
 
@@ -156,9 +187,7 @@ export function EventosPage({ onMudarAba }: Props) {
           <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-8">
             <p className="text-4xl">🎉</p>
             <p className="text-white font-bold text-lg">Nenhum evento ainda</p>
-            <p className="text-gray-500 text-sm text-center">
-              Os eventos do grupo aparecerão aqui.
-            </p>
+            <p className="text-gray-500 text-sm text-center">Os eventos do grupo aparecerão aqui.</p>
           </div>
         ) : (
           <div className="flex flex-col">
@@ -167,14 +196,14 @@ export function EventosPage({ onMudarAba }: Props) {
             ))}
           </div>
         )}
-
       </div>
 
       {modalAberto && (
-        <Modal variante="bottom-sheet"
-               titulo={etapa === "tipo" ? "Novo Evento" : "Aniversário 🎂"}
-               onFechar={etapa === "aniversario" ? () => setEtapa("tipo") : handleFechar}>
-
+        <Modal
+          variante="bottom-sheet"
+          titulo={obterTituloModal()}
+          onFechar={etapa !== "tipo" ? () => setEtapa("tipo") : handleFechar}
+        >
           {etapa === "tipo" && (
             <FormField label="Tipo de evento">
               <div className="grid grid-cols-2 gap-2">
@@ -186,7 +215,9 @@ export function EventosPage({ onMudarAba }: Props) {
                       type="button"
                       onClick={() => {
                         setTipoSelecionado(tipo.key);
-                        if (tipo.key === "aniversario") setEtapa("aniversario");
+                        if (tipo.key === "aniversario" || tipo.key === "amigo-secreto") {
+                          setEtapa(tipo.key);
+                        }
                       }}
                       className={`flex flex-col items-start gap-1 p-3 rounded-xl border transition-colors text-left ${
                         selecionado
@@ -207,125 +238,23 @@ export function EventosPage({ onMudarAba }: Props) {
           )}
 
           {etapa === "aniversario" && (
-            <>
-              <FormField label="Foto de capa (Opcional)">
-                <label className="cursor-pointer block">
-                  {previewCapa ? (
-                    <div className="relative">
-                      <img
-                        src={previewCapa}
-                        alt="Preview"
-                        className="w-full h-36 object-cover rounded-xl"
-                      />
-                      <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white px-2 py-1 rounded-full">
-                        Trocar
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="w-full h-36 rounded-xl border border-dashed border-white/20 flex flex-col items-center justify-center gap-2 text-gray-500 hover:border-white/40 hover:text-gray-400 transition-colors">
-                      <span className="text-2xl">🖼️</span>
-                      <span className="text-xs">Toque para adicionar uma capa</span>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFotoCapa}
-                  />
-                </label>
-              </FormField>
-              <FormField label="Nome do aniversariante">
-                <input
-                  type="text"
-                  placeholder="Digite o nome do aniversariante"
-                  value={nomeAniversariante}
-                  onChange={(e) => setNomeAniversariante(e.target.value)}
-                  className="bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                  autoFocus
-                />
-              </FormField>
+            <AniversarioForm
+              data={aniversarioData}
+              onChange={handleChangeAniversario}
+              erro={erro}
+              enviando={enviando}
+              onSubmit={handleSubmitAniversario}
+            />
+          )}
 
-              <FormField label="Idade (Opcional)">
-                <input
-                  type="number"
-                  placeholder="Ex: 30"
-                  value={idade}
-                  onChange={(e) => setIdade(e.target.value)}
-                  className="bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                />
-              </FormField>
-
-              <FormField label="Data e hora">
-                <input
-                  type="datetime-local"
-                  value={dataInicio}
-                  onChange={(e) => setDataInicio(e.target.value)}
-                  className="bg-background text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 [color-scheme:dark]"
-                />
-              </FormField>
-
-              <FormField label="Local (Opcional)">
-                <input
-                  type="text"
-                  placeholder="Ex: Casa do João, Meet..."
-                  value={localizacao}
-                  onChange={(e) => setLocalizacao(e.target.value)}
-                  className="bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                />
-              </FormField>
-
-              <FormField label="Descrição (Opcional)">
-                <textarea
-                  rows={3}
-                  placeholder="Detalhes do evento..."
-                  value={descricao}
-                  onChange={(e) => setDescricao(e.target.value)}
-                  className="bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
-                />
-              </FormField>
-
-              <FormField label="Lista de desejos (Opcional)">
-                <div className="flex flex-col gap-2">
-                  {itensLista.map((item, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder={`Item ${index + 1}`}
-                        value={item}
-                        onChange={(e) => atualizarItem(index, e.target.value)}
-                        className="flex-1 bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removerItem(index)}
-                        className="size-9 flex items-center justify-center rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors flex-shrink-0"
-                      >
-                        <TrashIcon className="size-4" />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={adicionarItem}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-white/20 text-gray-400 hover:border-white/40 hover:text-white transition-colors text-sm"
-                  >
-                    <PlusIcon className="size-4" />
-                    Adicionar item
-                  </button>
-                </div>
-              </FormField>
-
-              {erro && <p className="text-red-400 text-sm text-center -mt-1">{erro}</p>}
-
-              <button
-                onClick={handleSubmit}
-                disabled={enviando}
-                className="w-full py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 transition-colors text-white font-bold text-sm mt-2"
-              >
-                {enviando ? "Criando..." : "Criar evento"}
-              </button>
-            </>
+          {etapa === "amigo-secreto" && (
+            <AmigoSecretoForm
+              data={amigoSecretoData}
+              onChange={handleChangeAmigoSecreto}
+              erro={erro}
+              enviando={enviando}
+              onSubmit={handleSubmitAmigoSecreto}
+            />
           )}
         </Modal>
       )}

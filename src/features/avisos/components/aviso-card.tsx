@@ -13,13 +13,18 @@ function tempoRelativo(iso: string): string {
   return `Há ${d} dias`
 }
 
-export function AvisoCard({ aviso }: { aviso: NotificacaoDto }) {
+export function AvisoCard({ aviso, onClick }: { aviso: NotificacaoDto; onClick?: (id: string) => void }) {
   const navigate = useNavigate()
 
   return (
-    <div className={`flex items-start gap-4 rounded-2xl p-4 transition-colors ${
-      aviso.notificacaoLida ? "bg-surface" : "bg-surface border border-emerald-500"
-    }`}>
+    <div
+      onClick={() => !aviso.notificacaoLida && onClick?.(aviso.id)}
+      className={`flex items-start gap-4 rounded-2xl p-4 transition-colors ${
+        aviso.notificacaoLida
+          ? "bg-surface"
+          : "bg-surface border border-emerald-500 cursor-pointer hover:border-emerald-400"
+      }`}
+    >
       <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${
         aviso.notificacaoLida ? "bg-gray-700" : "bg-emerald-500"
       }`}>

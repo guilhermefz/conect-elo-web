@@ -66,7 +66,6 @@ export function EventoCard({ evento }: Props) {
       onClick={() => navigate(`/eventos/${evento.id}`)}
       className="mx-4 my-2 rounded-2xl bg-white/5 border border-white/10 overflow-hidden cursor-pointer active:opacity-70 transition-opacity"
     >
-      {/* Capa */}
        {evento.fotoCapaUrl ? (
          <img
            src={evento.fotoCapaUrl}
@@ -79,7 +78,6 @@ export function EventoCard({ evento }: Props) {
         </div>
       )}
 
-      {/* Conteúdo */}
       <div className="p-4 flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
           <span className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${tipo.badge}`}>

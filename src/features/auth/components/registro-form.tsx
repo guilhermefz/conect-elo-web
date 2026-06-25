@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { FormField } from "../../../components/form-field";
 import { Button } from "../../../components/button";
-import { useLogin } from "../hooks/use-login";
+import { useRegistro } from "../hooks/use-registro";
 
-export function LoginForm() {
+export function RegistroForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoading, erro } = useLogin();
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const { registro, isLoading, erros } = useRegistro();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login({ email, password });
+    registro({ email, password, confirmarSenha });
   };
 
   const inputClass =
@@ -18,34 +19,38 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
-      <FormField label="E-mail" erro={undefined}>
+      <FormField label="E-mail" erro={erros.email}>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={inputClass}
           placeholder="seu@email.com"
-          required
         />
       </FormField>
 
-      <FormField label="Senha" erro={undefined}>
+      <FormField label="Senha" erro={erros.password}>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={inputClass}
-          placeholder="••••••"
-          required
+          placeholder="Mínimo 6 caracteres"
         />
       </FormField>
 
-      {erro && (
-        <p className="text-red-400 text-sm text-center">{erro}</p>
-      )}
+      <FormField label="Confirmar Senha" erro={erros.confirmarSenha}>
+        <input
+          type="password"
+          value={confirmarSenha}
+          onChange={(e) => setConfirmarSenha(e.target.value)}
+          className={inputClass}
+          placeholder="Repita a senha"
+        />
+      </FormField>
 
       <Button disabled={isLoading} className="mt-2 w-full justify-center">
-        {isLoading ? "Entrando..." : "Entrar"}
+        {isLoading ? "Criando conta..." : "Criar conta"}
       </Button>
     </form>
   );
