@@ -13,7 +13,7 @@ import {
   type ConfirmacaoMembro,
 } from "../services/evento-service";
 import { PresencaEvento } from "../components/presenca-evento";
-import { AmigoSecretoSorteiosPainel } from "../components/amigo-secreto-sorteio-painel";
+import { AmigoSecretoSorteiosPainel } from "../../amigo-secreto/components/amigo-secreto-sorteio-painel";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; gradient: string }> = {

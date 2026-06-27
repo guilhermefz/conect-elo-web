@@ -1,5 +1,5 @@
 import { FormField } from "../../../components/form-field";
-import { EventoBaseForm, type EventoBaseData } from "./evento-base-form";
+import { EventoBaseForm, type EventoBaseData } from "../../eventos/components/evento-base-form";
 
 const INPUT_CLS = "bg-background text-white text-sm rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500";
 

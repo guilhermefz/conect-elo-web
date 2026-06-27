@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Modal } from "../../../components/modal";
 import { FormField } from "../../../components/form-field";
-import { CriarAniversario, CriarAmigoSecreto, uploadFotoCapa, type ExibirEventoResumo, listarEventosPorGrupo } from "../services/evento-service";
+import { CriarAniversario, uploadFotoCapa, type ExibirEventoResumo, listarEventosPorGrupo } from "../services/evento-service";
+import { CriarAmigoSecreto } from "../../amigo-secreto/services/amigo-secreto-service"
 import { EventoCard } from "../components/evento-card";
 import { AniversarioForm, type AniversarioData } from "../components/aniversario-form";
-import { AmigoSecretoForm, type AmigoSecretoData } from "../components/amigo-secreto-form";
+import { AmigoSecretoForm, type AmigoSecretoData } from "../../amigo-secreto/components/amigo-secreto-form";
 
 interface Props {
   onMudarAba: (aba: "chat" | "eventos") => void;

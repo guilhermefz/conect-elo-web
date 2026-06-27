@@ -63,16 +63,6 @@ export interface CriarAniversarioPayload {
   };
 }
 
-export interface CriarAmigoSecretoPayload {
-  titulo: string;
-  descricao?: string;
-  dataInicio?: string;
-  localizacao?: string;
-  grupoId: string;
-  dataSorteio?: string;
-  valor: string;
-}
-
 export interface ExibirEventoResumo {
     id: string;
     titulo: string;
@@ -100,11 +90,6 @@ export interface EditarEventoPayload {
 export async function CriarAniversario(payload:CriarAniversarioPayload): Promise<{ id: string }> {
     const response = await api.post("/api/Eventos/Aniversario", payload)
     return { id: response.data.dados.id };
-}
-
-export async function CriarAmigoSecreto(payload:CriarAmigoSecretoPayload): Promise<{ id: string }> {
-  const response = await api.post("/api/Eventos/AmigoSecreto", payload)
-  return { id: response.data.dados.id };
 }
 
 export async function listarEventosPorGrupo(grupoId: string): Promise<ExibirEventoResumo[]> {
@@ -160,21 +145,4 @@ export async function removerItemListaDesejos(itemId: string): Promise<void> {
 
 export async function editarEvento(payload: EditarEventoPayload): Promise<void> {
   await api.put("/api/Eventos/Editar", payload);
-}
-
-export interface SorteioExecutadoResult {
-  eventoId: string;
-  dataExecucao: string;
-  totalPares: number;
-  participantesIds: string[];
-}
-
-export async function sortearAgora(eventoId: string): Promise<SorteioExecutadoResult> {
-  const response = await api.post(`/api/AmigoSecreto/${eventoId}/SortearAgora`);
-  return response.data.dados;
-}
-
-export async function alterarDataSorteio(eventoId: string, novaData: string): Promise<{ jobId: string }> {
-  const response = await api.put(`/api/AmigoSecreto/${eventoId}/AlterarData`, { novaData });
-  return response.data.dados;
 }

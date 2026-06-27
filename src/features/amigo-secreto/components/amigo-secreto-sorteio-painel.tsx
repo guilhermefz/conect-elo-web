@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { sortearAgora, alterarDataSorteio, type ExibirEvento } from "../services/evento-service";
+import { type ExibirEvento } from "../../eventos/services/evento-service";
+import { sortearAgora, alterarDataSorteio} from "../services/amigo-secreto-service";
 
 interface AmigoSecretoSorteiosPainelProps {
   evento: ExibirEvento;
