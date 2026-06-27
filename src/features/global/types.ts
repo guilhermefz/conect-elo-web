@@ -5,6 +5,7 @@ export interface Evento {
   titulo: string;
   categoria: string;
   emoji: string;
+  imagemUrl: string;
   imagemCor: string;
   meta: string;
 }

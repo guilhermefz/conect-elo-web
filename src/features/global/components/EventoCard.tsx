@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Evento, TipoMeta } from "../types";
 import { ICONE_META } from "../utils/formatar-meta";
 
@@ -9,6 +10,7 @@ interface Props {
 
 export function EventoCard({ evento, tipoMeta, onAbrir }: Props) {
   const MetaIcon = ICONE_META[tipoMeta];
+  const [imgErro, setImgErro] = useState(false);
 
   return (
     <button
@@ -17,8 +19,17 @@ export function EventoCard({ evento, tipoMeta, onAbrir }: Props) {
     >
       <div
         className="w-full aspect-square rounded-xl overflow-hidden relative"
-        style={{ background: evento.imagemCor }}
+        style={imgErro ? { background: evento.imagemCor } : undefined}
       >
+        {!imgErro && (
+          <img
+            src={evento.imagemUrl}
+            alt={evento.titulo}
+            onError={() => setImgErro(true)}
+            className="w-full h-full object-cover"
+          />
+        )}
+
         <span className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/70 backdrop-blur-md border border-white/15 text-white text-xs font-medium">
           {evento.emoji} {evento.categoria}
         </span>
