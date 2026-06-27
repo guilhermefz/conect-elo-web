@@ -6,8 +6,13 @@ interface LoginDto {
 }
 
 interface RegistroDto {
+  nome: string;
   email: string;
   password: string;
+  dataNascimento: string;
+  genero: number;
+  cpf: null;
+  bio: null;
 }
 
 export const authService = {
@@ -17,7 +22,7 @@ export const authService = {
   },
 
   registro: async (dados: RegistroDto) => {
-    const response = await api.post("/register", dados);
+    const response = await api.post("/api/Usuario/Salvar", dados);
     return response;
   },
 }
