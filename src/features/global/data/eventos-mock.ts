@@ -1,0 +1,100 @@
+import type { Secao } from "../types";
+
+export const SECOES_MOCK: Secao[] = [
+  {
+    id: "proximos",
+    titulo: "Próximos de mim",
+    subtitulo: "A poucos minutos daqui",
+    tipoMeta: "distancia",
+    eventos: [
+      {
+        id: 1,
+        titulo: "Feira gastronômica de Pinheiros",
+        categoria: "Gastronomia",
+        emoji: "🍽️",
+        imagemCor: "linear-gradient(135deg, #1a3a2a 0%, #2d6a4f 100%)",
+        meta: "1,2 km",
+      },
+      {
+        id: 2,
+        titulo: "Sunset no Parque Ibirapuera",
+        categoria: "Ar livre",
+        emoji: "🌲",
+        imagemCor: "linear-gradient(135deg, #1a2a3a 0%, #2d4a6f 100%)",
+        meta: "2,4 km",
+      },
+      {
+        id: 3,
+        titulo: "Sarau na Vila Madalena",
+        categoria: "Cultura",
+        emoji: "🎭",
+        imagemCor: "linear-gradient(135deg, #3a1a2a 0%, #6f2d4a 100%)",
+        meta: "3,0 km",
+      },
+    ],
+  },
+  {
+    id: "fim-de-semana",
+    titulo: "Para o fim de semana",
+    subtitulo: "Sábado e domingo",
+    tipoMeta: "data",
+    eventos: [
+      {
+        id: 4,
+        titulo: "Piquenique coletivo no Villa-Lobos",
+        categoria: "Piquenique",
+        emoji: "🧺",
+        imagemCor: "linear-gradient(135deg, #2a3a1a 0%, #4a6f2d 100%)",
+        meta: "Sáb · 10h",
+      },
+      {
+        id: 5,
+        titulo: "Trilha guiada na Cantareira",
+        categoria: "Trilha",
+        emoji: "🥾",
+        imagemCor: "linear-gradient(135deg, #1a2a1a 0%, #2d5a2d 100%)",
+        meta: "Sáb · 7h",
+      },
+      {
+        id: 6,
+        titulo: "Brunch comunitário",
+        categoria: "Brunch",
+        emoji: "☕",
+        imagemCor: "linear-gradient(135deg, #3a2a1a 0%, #6f4a2d 100%)",
+        meta: "Dom · 11h",
+      },
+    ],
+  },
+  {
+    id: "festas",
+    titulo: "Festas temáticas",
+    subtitulo: "Vem fantasiado",
+    tipoMeta: "popularidade",
+    eventos: [
+      {
+        id: 7,
+        titulo: "Noite dos Anos 80",
+        categoria: "Anos 80",
+        emoji: "🕺",
+        imagemCor: "linear-gradient(135deg, #2a1a3a 0%, #4a2d6f 100%)",
+        meta: "248 pessoas",
+      },
+      {
+        id: 8,
+        titulo: "Festival Tropical",
+        categoria: "Tropical",
+        emoji: "🌴",
+        imagemCor: "linear-gradient(135deg, #1a3a1a 0%, #2d6f2d 100%)",
+        meta: "183 pessoas",
+      },
+      {
+        id: 9,
+        titulo: "Terror Noturno",
+        categoria: "Terror",
+        emoji: "👻",
+        imagemCor: "linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%)",
+        meta: "97 pessoas",
+      },
+    ],
+  },
+];
