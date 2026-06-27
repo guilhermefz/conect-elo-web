@@ -166,19 +166,10 @@ export function EventosPage({ onMudarAba }: Props) {
   return (
     <>
       <div
-        className="flex-1 overflow-y-auto flex flex-col"
+        className="flex-1 overflow-y-auto flex flex-col relative"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="px-4 py-3 border-b border-white/10">
-          <button
-            onClick={() => setModalAberto(true)}
-            className="w-full py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 transition-colors text-white font-bold text-sm"
-          >
-            Criar um novo evento
-          </button>
-        </div>
-
         {carregando ? (
           <div className="flex-1 flex items-center justify-center">
             <p className="text-gray-500 text-sm">Carregando eventos...</p>
@@ -197,6 +188,16 @@ export function EventosPage({ onMudarAba }: Props) {
           </div>
         )}
       </div>
+
+      <button
+        onClick={() => setModalAberto(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition-all shadow-lg flex items-center justify-center z-40"
+        aria-label="Criar novo evento"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
 
       {modalAberto && (
         <Modal
