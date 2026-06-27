@@ -39,19 +39,16 @@ export function AmigoSecretoSorteiosPainel({ evento, onSorteioExecutado }: Amigo
 
   async function handleSortearAgora() {
     if (!confirm("Tem certeza que deseja realizar o sorteio agora?")) return;
-
     setCarregando(true);
     setErro(null);
-
     try {
       await sortearAgora(evento.id);
-      const eventoAtualizado = {
+      onSorteioExecutado({
         ...evento,
         sorteado: true,
         dataExecucaoSorteio: new Date().toISOString(),
-        statusSorteio: 2, // Sorteado
-      };
-      onSorteioExecutado(eventoAtualizado);
+        statusSorteio: 2,
+      });
     } catch {
       setErro("Erro ao realizar o sorteio. Tente novamente.");
     } finally {
@@ -60,38 +57,18 @@ export function AmigoSecretoSorteiosPainel({ evento, onSorteioExecutado }: Amigo
   }
 
   async function handleAlterarData() {
-    if (!novaData) {
-      setErro("Por favor, selecione uma data válida.");
-      return;
-    }
-
+    if (!novaData) { setErro("Por favor, selecione uma data válida."); return; }
     const data = new Date(novaData);
-    const agora = new Date();
-
-    if (isNaN(data.getTime())) {
-      setErro("Data inválida.");
-      return;
-    }
-
-    if (data <= agora) {
-      setErro("A data deve ser no futuro.");
-      return;
-    }
-
+    if (isNaN(data.getTime())) { setErro("Data inválida."); return; }
+    if (data <= new Date()) { setErro("A data deve ser no futuro."); return; }
     setCarregando(true);
     setErro(null);
-
     try {
       const isoString = data.toISOString();
       await alterarDataSorteio(evento.id, isoString);
-      const eventoAtualizado = {
-        ...evento,
-        dataSorteio: isoString,
-      };
-      onSorteioExecutado(eventoAtualizado);
+      onSorteioExecutado({ ...evento, dataSorteio: isoString });
       setMostrando(false);
-    } catch (e) {
-      console.error("Erro ao alterar data:", e);
+    } catch {
       setErro("Erro ao alterar a data do sorteio. Tente novamente.");
     } finally {
       setCarregando(false);
@@ -100,11 +77,15 @@ export function AmigoSecretoSorteiosPainel({ evento, onSorteioExecutado }: Amigo
 
   if (sorteadoJa) {
     return (
-      <div className="flex items-start gap-3 p-4 rounded-2xl bg-green-500/10 border border-green-500/20">
+      <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
         <span className="text-xl">✅</span>
         <div>
-          <p className="text-gray-500 text-xs mb-0.5">Sorteio realizado em</p>
-          <p className="text-green-400 text-sm">{evento.dataExecucaoSorteio ? formatarData(evento.dataExecucaoSorteio) : "Data indisponível"}</p>
+          <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-white/[0.42] mb-0.5">
+            Sorteio realizado em
+          </p>
+          <p className="text-sm font-medium text-emerald-400 capitalize">
+            {evento.dataExecucaoSorteio ? formatarData(evento.dataExecucaoSorteio) : "Data indisponível"}
+          </p>
         </div>
       </div>
     );
@@ -113,19 +94,23 @@ export function AmigoSecretoSorteiosPainel({ evento, onSorteioExecutado }: Amigo
   return (
     <div className="flex flex-col gap-3">
       {temDataAgendada && (
-        <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+        <div className="flex items-start gap-3 rounded-2xl border border-white/[0.07] bg-surface p-4">
           <span className="text-xl">⏰</span>
           <div className="flex-1">
-            <p className="text-gray-500 text-xs mb-0.5">Sorteio agendado para</p>
-            <p className="text-blue-400 text-sm">{formatarData(evento.dataSorteio!)}</p>
+            <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-white/[0.42] mb-0.5">
+              Sorteio agendado para
+            </p>
+            <p className="text-sm font-medium text-emerald-400 capitalize">
+              {formatarData(evento.dataSorteio!)}
+            </p>
           </div>
         </div>
       )}
 
       {erro && (
-        <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/10 border border-red-500/20">
+        <div className="flex items-start gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4">
           <span className="text-xl">⚠️</span>
-          <p className="text-red-400 text-sm">{erro}</p>
+          <p className="text-sm text-rose-400">{erro}</p>
         </div>
       )}
 
@@ -134,44 +119,43 @@ export function AmigoSecretoSorteiosPainel({ evento, onSorteioExecutado }: Amigo
           <button
             onClick={handleSortearAgora}
             disabled={carregando}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-blue-500 text-white font-semibold text-sm disabled:opacity-50 hover:bg-blue-600 transition-colors"
+            className="flex-1 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-bold text-[#0b1a14] hover:bg-emerald-400 transition-colors disabled:opacity-50"
           >
             {carregando ? "Processando..." : "Sortear agora"}
           </button>
           <button
             onClick={() => setMostrando(true)}
             disabled={carregando}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-sm disabled:opacity-50 hover:bg-white/20 transition-colors"
+            className="flex-1 rounded-full border border-white/[0.07] bg-surface px-4 py-2.5 text-sm font-bold text-white hover:bg-white/5 transition-colors disabled:opacity-50"
           >
             Alterar data
           </button>
         </div>
       ) : (
-        <div className="flex flex-col gap-3 p-4 rounded-2xl bg-white/5 border border-white/10">
-          <div className="flex flex-col gap-1">
-            <label className="text-white text-xs font-semibold">Nova data do sorteio</label>
+        <div className="flex flex-col gap-3 rounded-2xl border border-white/[0.07] bg-surface p-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[11px] font-medium uppercase tracking-[0.06em] text-white/[0.42]">
+              Nova data do sorteio
+            </label>
             <input
               type="datetime-local"
               value={novaData}
               onChange={(e) => setNovaData(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 text-sm"
+              className="rounded-xl border border-white/[0.07] bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-emerald-500/50"
             />
           </div>
           <div className="flex gap-2">
             <button
               onClick={handleAlterarData}
               disabled={carregando}
-              className="flex-1 px-4 py-2 rounded-lg bg-blue-500 text-white font-semibold text-sm disabled:opacity-50 hover:bg-blue-600 transition-colors"
+              className="flex-1 rounded-full bg-emerald-500 px-4 py-2 text-sm font-bold text-[#0b1a14] hover:bg-emerald-400 transition-colors disabled:opacity-50"
             >
               {carregando ? "Salvando..." : "Confirmar"}
             </button>
             <button
-              onClick={() => {
-                setMostrando(false);
-                setErro(null);
-              }}
+              onClick={() => { setMostrando(false); setErro(null); }}
               disabled={carregando}
-              className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white font-semibold text-sm disabled:opacity-50 hover:bg-white/20 transition-colors"
+              className="flex-1 rounded-full border border-white/[0.07] bg-surface px-4 py-2 text-sm font-bold text-white hover:bg-white/5 transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>
