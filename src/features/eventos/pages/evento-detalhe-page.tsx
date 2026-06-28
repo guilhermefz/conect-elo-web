@@ -13,7 +13,6 @@ import {
   type ConfirmacaoMembro,
 } from "../services/evento-service";
 import { PresencaEvento } from "../components/presenca-evento";
-import { AmigoSecretoSorteiosPainel } from "../../amigo-secreto/components/amigo-secreto-sorteio-painel";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; gradient: string }> = {
@@ -269,16 +268,6 @@ export function EventoDetalhePage() {
                   dados={confirmacoes}
                   onVerTodos={() => setAbaAtiva("participantes")}
                 />
-              )}
-
-              {/* GERENCIAR SORTEIO (amigo secreto, só para o criador) */}
-              {evento.tipoEvento === 0 && evento.criador === meuId && (
-                <div className="flex flex-col gap-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-white/[0.42]">
-                    Gerenciar sorteio
-                  </p>
-                  <AmigoSecretoSorteiosPainel evento={evento} onSorteioExecutado={setEvento} />
-                </div>
               )}
 
               {/* LISTA DE PRESENTES */}
