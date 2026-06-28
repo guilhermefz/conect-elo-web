@@ -13,6 +13,8 @@ import {
   type ConfirmacaoMembro,
 } from "../services/evento-service";
 import { PresencaEvento } from "../components/presenca-evento";
+import { AmigoSecretoSorteioCard } from "../../amigo-secreto/components/amigo-secreto-sorteio-card";
+import { sortear } from "../../amigo-secreto/services/amigo-secreto-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; gradient: string }> = {
@@ -72,6 +74,9 @@ export function EventoDetalhePage() {
   const [abaAtiva, setAbaAtiva] = useState<"detalhes" | "participantes">("detalhes");
   const [verMaisDescricao, setVerMaisDescricao] = useState(false);
 
+  const [sorteando, setSorteando] = useState(false);
+  const [erroSorteio, setErroSorteio] = useState<string | null>(null);
+
   const meuId = useMemo(() => getUsuarioIdFromToken() ?? "", []);
 
   useEffect(() => {
@@ -94,6 +99,30 @@ export function EventoDetalhePage() {
       setItens((prev) => prev.map((i) => (i.id === itemId ? atualizado : i)));
     } catch {
       // mantém estado anterior silenciosamente
+    }
+  }
+
+  async function handleSortear() {
+    if (!evento) return;
+    if (!confirm("Deseja realizar o sorteio agora? Esta ação não pode ser desfeita.")) return;
+    setSorteando(true);
+    setErroSorteio(null);
+    try {
+      const resultado = await sortear(evento.id);
+      setEvento({
+        ...evento,
+        sorteado: true,
+        statusSorteio: 2,
+        dataExecucaoSorteio: resultado.dataExecucao,
+      });
+    } catch (e: unknown) {
+      const mensagem =
+        (typeof e === "object" && e && "response" in e
+          ? (e as { response?: { data?: { mensagem?: string } } }).response?.data?.mensagem
+          : null) ?? "Não foi possível realizar o sorteio. Tente novamente.";
+      setErroSorteio(mensagem);
+    } finally {
+      setSorteando(false);
     }
   }
 
@@ -267,6 +296,17 @@ export function EventoDetalhePage() {
                   eventoId={evento.id}
                   dados={confirmacoes}
                   onVerTodos={() => setAbaAtiva("participantes")}
+                />
+              )}
+
+              {/* SORTEIO DO AMIGO SECRETO */}
+              {evento.tipoEvento === 0 && !evento.sorteado && (
+                <AmigoSecretoSorteioCard
+                  dataSorteio={evento.dataSorteio}
+                  ehOrganizador={evento.criador === meuId}
+                  onSortear={handleSortear}
+                  carregando={sorteando}
+                  erro={erroSorteio}
                 />
               )}
 
