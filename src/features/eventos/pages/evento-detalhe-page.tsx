@@ -15,6 +15,7 @@ import {
 import { PresencaEvento } from "../components/presenca-evento";
 import { AmigoSecretoSorteioCard } from "../../amigo-secreto/components/amigo-secreto-sorteio-card";
 import { AmigoSecretoResultadoCard } from "../../amigo-secreto/components/amigo-secreto-resultado-card";
+import { MinhaListaDesejosCard } from "../../amigo-secreto/components/minha-lista-desejos-card";
 import { sortear, buscarMeuResultado, type MeuResultado } from "../../amigo-secreto/services/amigo-secreto-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
@@ -324,6 +325,11 @@ export function EventoDetalhePage() {
                   foto={meuResultado.comoPresenteador.fotoRecebedor}
                   onVerDetalhes={() => navigate(`/eventos/${id}/amigo-secreto`)}
                 />
+              )}
+
+              {/* MINHA LISTA DE DESEJOS (amigo secreto) */}
+              {evento.tipoEvento === 0 && id && (
+                <MinhaListaDesejosCard eventoId={id} />
               )}
 
               {/* LISTA DE PRESENTES */}

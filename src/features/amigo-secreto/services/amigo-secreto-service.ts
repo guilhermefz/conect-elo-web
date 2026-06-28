@@ -1,5 +1,5 @@
 import api from "../../../lib/axios"
-import { type ExibirListaDesejos } from "../../eventos/services/evento-service"
+import { type ExibirListaDesejos, type ExibirItemListaDesejos } from "../../eventos/services/evento-service"
 
 export interface CriarAmigoSecretoPayload {
   titulo: string;
@@ -47,4 +47,26 @@ export interface MeuResultado {
 export async function buscarMeuResultado(eventoId: string): Promise<MeuResultado> {
   const response = await api.get(`/api/AmigoSecreto/${eventoId}/MeuResultado`);
   return response.data.dados;
+}
+
+export interface AdicionarItemPayload {
+  descricao: string;
+  urlReference?: string;
+}
+
+export async function buscarMinhaLista(eventoId: string): Promise<ExibirListaDesejos> {
+  const response = await api.get(`/api/AmigoSecreto/${eventoId}/MinhaLista`);
+  return response.data.dados;
+}
+
+export async function adicionarItemMinhaLista(
+  eventoId: string,
+  payload: AdicionarItemPayload,
+): Promise<ExibirItemListaDesejos> {
+  const response = await api.post(`/api/AmigoSecreto/${eventoId}/MinhaLista/Itens`, payload);
+  return response.data.dados;
+}
+
+export async function removerItemMinhaLista(itemId: string): Promise<void> {
+  await api.delete(`/api/AmigoSecreto/ListaDesejos/Itens/${itemId}`);
 }
