@@ -14,7 +14,8 @@ import {
 } from "../services/evento-service";
 import { PresencaEvento } from "../components/presenca-evento";
 import { AmigoSecretoSorteioCard } from "../../amigo-secreto/components/amigo-secreto-sorteio-card";
-import { sortear } from "../../amigo-secreto/services/amigo-secreto-service";
+import { AmigoSecretoResultadoCard } from "../../amigo-secreto/components/amigo-secreto-resultado-card";
+import { sortear, buscarMeuResultado, type MeuResultado } from "../../amigo-secreto/services/amigo-secreto-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; gradient: string }> = {
@@ -76,6 +77,7 @@ export function EventoDetalhePage() {
 
   const [sorteando, setSorteando] = useState(false);
   const [erroSorteio, setErroSorteio] = useState<string | null>(null);
+  const [meuResultado, setMeuResultado] = useState<MeuResultado | null>(null);
 
   const meuId = useMemo(() => getUsuarioIdFromToken() ?? "", []);
 
@@ -90,6 +92,11 @@ export function EventoDetalhePage() {
       .catch(() => setErro(true))
       .finally(() => setCarregando(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!id || evento?.tipoEvento !== 0 || !evento.sorteado) return;
+    buscarMeuResultado(id).then(setMeuResultado).catch(() => setMeuResultado(null));
+  }, [id, evento?.tipoEvento, evento?.sorteado]);
 
   async function toggleItem(itemId: string, jaSelecionado: boolean) {
     try {
@@ -307,6 +314,15 @@ export function EventoDetalhePage() {
                   onSortear={handleSortear}
                   carregando={sorteando}
                   erro={erroSorteio}
+                />
+              )}
+
+              {/* RESULTADO DO AMIGO SECRETO (após o sorteio) */}
+              {evento.tipoEvento === 0 && evento.sorteado && meuResultado?.comoPresenteador && (
+                <AmigoSecretoResultadoCard
+                  nome={meuResultado.comoPresenteador.nomeRecebedor}
+                  foto={meuResultado.comoPresenteador.fotoRecebedor}
+                  onVerDetalhes={() => navigate(`/eventos/${id}/amigo-secreto`)}
                 />
               )}
 
