@@ -15,6 +15,7 @@ import { AjudaPage } from "./features/ajuda/pages/ajuda-page";
 import { SobrePage } from "./features/sobre/pages/sobre-page";
 import { GrupoLayout } from "./features/grupo/pages/grupo-layout";
 import { EventoEditarPage } from "./features/eventos/pages/evento-editar-page";
+import { AmigoSecretoDetalhePage } from "./features/amigo-secreto/pages/amigo-secreto-detalhe-page";
 import { ToastProvider } from "./components/toast"
 import { SignalRProvider } from "./hooks/signalr-context";
 import { HomePage } from "./features/home/pages/home-page";
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="/eventos" element={<EventosIndexPage />} />
             <Route path="/eventos/:id" element={<EventoDetalhePage />} />
             <Route path="/eventos/:id/editar" element={<EventoEditarPage />} />
+            <Route path="/eventos/:id/amigo-secreto" element={<AmigoSecretoDetalhePage />} />
 
             <Route path="/agenda" element={<AgendaPage />} />
 

@@ -13,7 +13,9 @@ import {
   type ConfirmacaoMembro,
 } from "../services/evento-service";
 import { PresencaEvento } from "../components/presenca-evento";
-import { AmigoSecretoSorteiosPainel } from "../../amigo-secreto/components/amigo-secreto-sorteio-painel";
+import { AmigoSecretoSorteioCard } from "../../amigo-secreto/components/amigo-secreto-sorteio-card";
+import { AmigoSecretoResultadoCard } from "../../amigo-secreto/components/amigo-secreto-resultado-card";
+import { sortear, buscarMeuResultado, type MeuResultado } from "../../amigo-secreto/services/amigo-secreto-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; gradient: string }> = {
@@ -73,6 +75,10 @@ export function EventoDetalhePage() {
   const [abaAtiva, setAbaAtiva] = useState<"detalhes" | "participantes">("detalhes");
   const [verMaisDescricao, setVerMaisDescricao] = useState(false);
 
+  const [sorteando, setSorteando] = useState(false);
+  const [erroSorteio, setErroSorteio] = useState<string | null>(null);
+  const [meuResultado, setMeuResultado] = useState<MeuResultado | null>(null);
+
   const meuId = useMemo(() => getUsuarioIdFromToken() ?? "", []);
 
   useEffect(() => {
@@ -87,6 +93,11 @@ export function EventoDetalhePage() {
       .finally(() => setCarregando(false));
   }, [id]);
 
+  useEffect(() => {
+    if (!id || evento?.tipoEvento !== 0 || !evento.sorteado) return;
+    buscarMeuResultado(id).then(setMeuResultado).catch(() => setMeuResultado(null));
+  }, [id, evento?.tipoEvento, evento?.sorteado]);
+
   async function toggleItem(itemId: string, jaSelecionado: boolean) {
     try {
       const atualizado = jaSelecionado
@@ -95,6 +106,30 @@ export function EventoDetalhePage() {
       setItens((prev) => prev.map((i) => (i.id === itemId ? atualizado : i)));
     } catch {
       // mantém estado anterior silenciosamente
+    }
+  }
+
+  async function handleSortear() {
+    if (!evento) return;
+    if (!confirm("Deseja realizar o sorteio agora? Esta ação não pode ser desfeita.")) return;
+    setSorteando(true);
+    setErroSorteio(null);
+    try {
+      const resultado = await sortear(evento.id);
+      setEvento({
+        ...evento,
+        sorteado: true,
+        statusSorteio: 2,
+        dataExecucaoSorteio: resultado.dataExecucao,
+      });
+    } catch (e: unknown) {
+      const mensagem =
+        (typeof e === "object" && e && "response" in e
+          ? (e as { response?: { data?: { mensagem?: string } } }).response?.data?.mensagem
+          : null) ?? "Não foi possível realizar o sorteio. Tente novamente.";
+      setErroSorteio(mensagem);
+    } finally {
+      setSorteando(false);
     }
   }
 
@@ -271,14 +306,24 @@ export function EventoDetalhePage() {
                 />
               )}
 
-              {/* GERENCIAR SORTEIO (amigo secreto, só para o criador) */}
-              {evento.tipoEvento === 0 && evento.criador === meuId && (
-                <div className="flex flex-col gap-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-white/[0.42]">
-                    Gerenciar sorteio
-                  </p>
-                  <AmigoSecretoSorteiosPainel evento={evento} onSorteioExecutado={setEvento} />
-                </div>
+              {/* SORTEIO DO AMIGO SECRETO */}
+              {evento.tipoEvento === 0 && !evento.sorteado && (
+                <AmigoSecretoSorteioCard
+                  dataSorteio={evento.dataSorteio}
+                  ehOrganizador={evento.criador === meuId}
+                  onSortear={handleSortear}
+                  carregando={sorteando}
+                  erro={erroSorteio}
+                />
+              )}
+
+              {/* RESULTADO DO AMIGO SECRETO (após o sorteio) */}
+              {evento.tipoEvento === 0 && evento.sorteado && meuResultado?.comoPresenteador && (
+                <AmigoSecretoResultadoCard
+                  nome={meuResultado.comoPresenteador.nomeRecebedor}
+                  foto={meuResultado.comoPresenteador.fotoRecebedor}
+                  onVerDetalhes={() => navigate(`/eventos/${id}/amigo-secreto`)}
+                />
               )}
 
               {/* LISTA DE PRESENTES */}

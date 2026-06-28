@@ -1,4 +1,5 @@
 import api from "../../../lib/axios"
+import { type ExibirListaDesejos } from "../../eventos/services/evento-service"
 
 export interface CriarAmigoSecretoPayload {
   titulo: string;
@@ -10,7 +11,7 @@ export interface CriarAmigoSecretoPayload {
   valor: string;
 }
 
-export interface SorteioExecutadoResult {
+export interface SorteioExecutado {
   eventoId: string;
   dataExecucao: string;
   totalPares: number;
@@ -22,12 +23,28 @@ export async function CriarAmigoSecreto(payload:CriarAmigoSecretoPayload): Promi
   return { id: response.data.dados.id };
 }
 
-export async function sortearAgora(eventoId: string): Promise<SorteioExecutadoResult> {
-  const response = await api.post(`/api/AmigoSecreto/${eventoId}/SortearAgora`);
+export async function sortear(eventoId: string): Promise<SorteioExecutado> {
+  const response = await api.post(`/api/AmigoSecreto/${eventoId}/Sortear`);
   return response.data.dados;
 }
 
-export async function alterarDataSorteio(eventoId: string, novaData: string): Promise<{ jobId: string }> {
-  const response = await api.put(`/api/AmigoSecreto/${eventoId}/AlterarData`, { novaData });
+export interface ResultadoComoPresenteador {
+  resultadoSorteioId: string;
+  nomeRecebedor: string;
+  fotoRecebedor?: string;
+  listaDesejos?: ExibirListaDesejos;
+}
+
+export interface ResultadoComoRecebedor {
+  resultadoSorteioId: string;
+}
+
+export interface MeuResultado {
+  comoPresenteador?: ResultadoComoPresenteador | null;
+  comoRecebedor?: ResultadoComoRecebedor | null;
+}
+
+export async function buscarMeuResultado(eventoId: string): Promise<MeuResultado> {
+  const response = await api.get(`/api/AmigoSecreto/${eventoId}/MeuResultado`);
   return response.data.dados;
 }
