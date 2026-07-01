@@ -11,6 +11,7 @@ import { GrupoCard } from "../components/grupo-card";
 import { Fab } from "../components/fab";
 import { ModalEntrarConvite } from "../components/modal-entrar-convite";
 import { useToast } from "../../../components/toast";
+import { ListaConversasAnonimas } from "../../chat-anonimo/components/lista-conversas-anonimas";
 
 type Aba = "recentes" | "anonimo";
 
@@ -70,17 +71,23 @@ export function GruposPage() {
       <div className="flex flex-col gap-3 px-4 pb-24">
         {erro && <MensagemErro texto={erro} onFechar={limparErro} />}
 
-        {grupos.map((grupo) => (
-          <GrupoCard
-            key={grupo.id}
-            nome={grupo.nome}
-            fotoUrl={grupo.imgGrupo ? buildFotoGrupoUrl(grupo.imgGrupo) : null}
-            onClick={() => navigate(`/grupos/${grupo.id}/chat`, { state: { nome: grupo.nome } })}
-          />
-        ))}
+        {aba === "recentes" ? (
+          <>
+            {grupos.map((grupo) => (
+              <GrupoCard
+                key={grupo.id}
+                nome={grupo.nome}
+                fotoUrl={grupo.imgGrupo ? buildFotoGrupoUrl(grupo.imgGrupo) : null}
+                onClick={() => navigate(`/grupos/${grupo.id}/chat`, { state: { nome: grupo.nome } })}
+              />
+            ))}
 
-        {grupos.length === 0 && !erro && (
-          <p className="text-gray-500 text-sm text-center mt-10">Você não participa de nenhum grupo ainda.</p>
+            {grupos.length === 0 && !erro && (
+              <p className="text-gray-500 text-sm text-center mt-10">Você não participa de nenhum grupo ainda.</p>
+            )}
+          </>
+        ) : (
+          <ListaConversasAnonimas onAbrir={(id) => navigate(`/chat-anonimo/${id}`)} />
         )}
       </div>
 

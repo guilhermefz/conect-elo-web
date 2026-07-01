@@ -17,6 +17,7 @@ import { SobrePage } from "./features/sobre/pages/sobre-page";
 import { GrupoLayout } from "./features/grupo/pages/grupo-layout";
 import { EventoEditarPage } from "./features/eventos/pages/evento-editar-page";
 import { AmigoSecretoDetalhePage } from "./features/amigo-secreto/pages/amigo-secreto-detalhe-page";
+import { ChatAnonimoPage } from "./features/chat-anonimo/pages/chat-anonimo-page";
 import { ToastProvider } from "./components/toast"
 import { SignalRProvider } from "./hooks/signalr-context";
 import { HomePage } from "./features/home/pages/home-page";
@@ -41,6 +42,8 @@ export default function App() {
             <Route path="/grupos/novo" element={<NovoGrupoPage />} />
             <Route path="/grupos/:id/*" element={<GrupoLayout />} />
             <Route path="/grupos/:id/editar" element={<EditarGrupoPage />} />
+
+            <Route path="/chat-anonimo/:id" element={<ChatAnonimoPage />} />
 
             <Route path="/avisos" element={<AvisosPage />} />
 
