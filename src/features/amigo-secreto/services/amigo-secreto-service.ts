@@ -70,3 +70,105 @@ export async function adicionarItemMinhaLista(
 export async function removerItemMinhaLista(itemId: string): Promise<void> {
   await api.delete(`/api/AmigoSecreto/ListaDesejos/Itens/${itemId}`);
 }
+
+// ─────────────────────────── Detalhe + Quiz ───────────────────────────
+
+export interface OpcaoQuiz {
+  id: string;
+  emoji?: string;
+  texto: string;
+  ordem: number;
+}
+
+export interface PerguntaCatalogo {
+  id: string;
+  texto: string;
+  opcoes: OpcaoQuiz[];
+}
+
+export interface PerguntaAtiva {
+  perguntaAmigoSecretoId: string;
+  perguntaQuizId: string;
+  texto: string;
+  resposta?: OpcaoQuiz | null;
+  perguntadaEm: string;
+  respondidaEm?: string | null;
+}
+
+export interface PerguntaRecebida {
+  perguntaAmigoSecretoId: string;
+  texto: string;
+  opcoes: OpcaoQuiz[];
+  opcaoRespostaId?: string | null;
+}
+
+export interface InteresseResumo {
+  id: string;
+  nome: string;
+}
+
+export interface AmigoSecretoDetalhe {
+  resultadoSorteioId: string;
+  nomeRecebedor: string;
+  fotoRecebedor?: string;
+  bio?: string;
+  idade?: number | null;
+  genero: number;
+  interesses: InteresseResumo[];
+  listaDesejos?: ExibirListaDesejos | null;
+  valor: number;
+  dataSorteio: string;
+  slotsTotais: number;
+  slotsUsados: number;
+  perguntasAtivas: PerguntaAtiva[];
+  perguntasDisponiveis: PerguntaCatalogo[];
+}
+
+export async function buscarDetalhe(eventoId: string): Promise<AmigoSecretoDetalhe> {
+  const response = await api.get(`/api/AmigoSecreto/${eventoId}/Detalhe`);
+  return response.data.dados;
+}
+
+export async function listarCatalogoQuiz(): Promise<PerguntaCatalogo[]> {
+  const response = await api.get(`/api/AmigoSecreto/QuizPerguntas`);
+  return response.data.dados;
+}
+
+export async function perguntarQuiz(
+  eventoId: string,
+  perguntaQuizId: string,
+): Promise<PerguntaAtiva> {
+  const response = await api.post(`/api/AmigoSecreto/${eventoId}/Quiz/Perguntar`, {
+    perguntaQuizId,
+  });
+  return response.data.dados;
+}
+
+export async function trocarPerguntaQuiz(
+  perguntaAmigoSecretoId: string,
+  novaPerguntaQuizId: string,
+): Promise<PerguntaAtiva> {
+  const response = await api.put(
+    `/api/AmigoSecreto/Quiz/${perguntaAmigoSecretoId}/Trocar`,
+    { novaPerguntaQuizId },
+  );
+  return response.data.dados;
+}
+
+export async function responderQuiz(
+  perguntaAmigoSecretoId: string,
+  opcaoId: string,
+): Promise<PerguntaRecebida> {
+  const response = await api.put(
+    `/api/AmigoSecreto/Quiz/${perguntaAmigoSecretoId}/Responder`,
+    { opcaoId },
+  );
+  return response.data.dados;
+}
+
+export async function listarPerguntasRecebidas(
+  eventoId: string,
+): Promise<PerguntaRecebida[]> {
+  const response = await api.get(`/api/AmigoSecreto/${eventoId}/Quiz/Recebidas`);
+  return response.data.dados;
+}

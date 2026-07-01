@@ -16,7 +16,14 @@ import { PresencaEvento } from "../components/presenca-evento";
 import { AmigoSecretoSorteioCard } from "../../amigo-secreto/components/amigo-secreto-sorteio-card";
 import { AmigoSecretoResultadoCard } from "../../amigo-secreto/components/amigo-secreto-resultado-card";
 import { MinhaListaDesejosCard } from "../../amigo-secreto/components/minha-lista-desejos-card";
-import { sortear, buscarMeuResultado, type MeuResultado } from "../../amigo-secreto/services/amigo-secreto-service";
+import { PerguntasRecebidasCard } from "../../amigo-secreto/components/perguntas-recebidas-card";
+import {
+  sortear,
+  buscarMeuResultado,
+  listarPerguntasRecebidas,
+  type MeuResultado,
+  type PerguntaRecebida,
+} from "../../amigo-secreto/services/amigo-secreto-service";
 import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
 const TIPO_MAP: Record<string, { emoji: string; label: string; gradient: string }> = {
@@ -79,8 +86,11 @@ export function EventoDetalhePage() {
   const [sorteando, setSorteando] = useState(false);
   const [erroSorteio, setErroSorteio] = useState<string | null>(null);
   const [meuResultado, setMeuResultado] = useState<MeuResultado | null>(null);
+  const [perguntasRecebidas, setPerguntasRecebidas] = useState<PerguntaRecebida[]>([]);
 
   const meuId = useMemo(() => getUsuarioIdFromToken() ?? "", []);
+
+  const pendentesRecebidas = perguntasRecebidas.filter((p) => !p.opcaoRespostaId).length;
 
   useEffect(() => {
     if (!id) return;
@@ -97,7 +107,13 @@ export function EventoDetalhePage() {
   useEffect(() => {
     if (!id || evento?.tipoEvento !== 0 || !evento.sorteado) return;
     buscarMeuResultado(id).then(setMeuResultado).catch(() => setMeuResultado(null));
+    listarPerguntasRecebidas(id).then(setPerguntasRecebidas).catch(() => setPerguntasRecebidas([]));
   }, [id, evento?.tipoEvento, evento?.sorteado]);
+
+  function recarregarPerguntasRecebidas() {
+    if (!id) return;
+    listarPerguntasRecebidas(id).then(setPerguntasRecebidas).catch(() => setPerguntasRecebidas([]));
+  }
 
   async function toggleItem(itemId: string, jaSelecionado: boolean) {
     try {
@@ -228,9 +244,16 @@ export function EventoDetalhePage() {
                   abaAtiva === aba ? "text-emerald-500" : "text-white/[0.42]"
                 }`}
               >
-                {aba === "detalhes"
-                  ? "Detalhes"
-                  : `Participantes${confirmacoes ? ` (${confirmacoes.confirmacoes.length})` : ""}`}
+                <span className="inline-flex items-center gap-1.5">
+                  {aba === "detalhes"
+                    ? "Detalhes"
+                    : `Participantes${confirmacoes ? ` (${confirmacoes.confirmacoes.length})` : ""}`}
+                  {aba === "detalhes" && pendentesRecebidas > 0 && (
+                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-[#0b1a14]">
+                      {pendentesRecebidas}
+                    </span>
+                  )}
+                </span>
                 {abaAtiva === aba && (
                   <span className="absolute inset-x-4 -bottom-px h-0.5 rounded bg-emerald-500" />
                 )}
@@ -330,6 +353,14 @@ export function EventoDetalhePage() {
               {/* MINHA LISTA DE DESEJOS (amigo secreto) */}
               {evento.tipoEvento === 0 && id && (
                 <MinhaListaDesejosCard eventoId={id} />
+              )}
+
+              {/* PERGUNTAS DO AMIGO SECRETO (para responder) */}
+              {evento.tipoEvento === 0 && evento.sorteado && perguntasRecebidas.length > 0 && (
+                <PerguntasRecebidasCard
+                  perguntas={perguntasRecebidas}
+                  onRespondeu={recarregarPerguntasRecebidas}
+                />
               )}
 
               {/* LISTA DE PRESENTES */}
