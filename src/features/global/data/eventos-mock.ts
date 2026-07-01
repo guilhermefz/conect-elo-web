@@ -15,6 +15,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #1a3a2a 0%, #2d6a4f 100%)",
         meta: "1,2 km",
+        resumo: "Comidas de rua e produtores locais",
+        descricao:
+          "Mais de 40 barracas com receitas autorais, food trucks e cervejas artesanais. Música ao vivo a partir das 18h no coração de Pinheiros.",
+        tags: ["Comida de rua", "Cerveja artesanal", "Música ao vivo", "Pet friendly"],
       },
       {
         id: 2,
@@ -24,6 +28,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #1a2a3a 0%, #2d4a6f 100%)",
         meta: "2,4 km",
+        resumo: "Pôr do sol com DJ e picnic",
+        descricao:
+          "Encontro ao ar livre para curtir o entardecer com set de vinil, mantas na grama e food bikes. Leve seu cobertor e boa companhia.",
+        tags: ["Ar livre", "DJ set", "Picnic", "Relax"],
       },
       {
         id: 3,
@@ -33,6 +41,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #3a1a2a 0%, #6f2d4a 100%)",
         meta: "3,0 km",
+        resumo: "Poesia, música e microfone aberto",
+        descricao:
+          "Noite de sarau com poetas convidados, roda de violão e microfone aberto para quem quiser se apresentar. Entrada solidária: 1 kg de alimento.",
+        tags: ["Poesia", "Microfone aberto", "Música", "Solidário"],
       },
     ],
   },
@@ -50,6 +62,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1526976668912-1a811878dd37?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #2a3a1a 0%, #4a6f2d 100%)",
         meta: "Sáb · 10h",
+        resumo: "Manhã de sol, jogos e comida compartilhada",
+        descricao:
+          "Traga um prato para dividir e curta uma manhã de jogos de tabuleiro, frescobol e boa conversa. Ponto de encontro na entrada principal do parque.",
+        tags: ["Piquenique", "Jogos", "Família", "Comida compartilhada"],
       },
       {
         id: 5,
@@ -59,6 +75,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #1a2a1a 0%, #2d5a2d 100%)",
         meta: "Sáb · 7h",
+        resumo: "Percurso leve de 6 km com guia",
+        descricao:
+          "Trilha para todos os níveis com guia credenciado, parada em mirante e café da manhã na volta. Leve água, protetor solar e tênis fechado.",
+        tags: ["Trilha", "Natureza", "Nível fácil", "Guia incluso"],
       },
       {
         id: 6,
@@ -68,6 +88,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1533920379810-6bedac9e31df?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #3a2a1a 0%, #6f4a2d 100%)",
         meta: "Dom · 11h",
+        resumo: "Mesa coletiva com café especial",
+        descricao:
+          "Domingo relax com café especial, pães artesanais e ovos mexidos na chapa. Formato colaborativo: cada um contribui com um item da mesa.",
+        tags: ["Brunch", "Café especial", "Colaborativo", "Domingo"],
       },
     ],
   },
@@ -85,6 +109,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #2a1a3a 0%, #4a2d6f 100%)",
         meta: "248 pessoas",
+        resumo: "Neon, synthpop e muito glitter",
+        descricao:
+          "Volte no tempo com clássicos do synthpop, pista iluminada em neon e concurso de melhor fantasia. Prêmios para os looks mais autênticos da era.",
+        tags: ["Anos 80", "Neon", "Fantasia", "Dança"],
       },
       {
         id: 8,
@@ -94,6 +122,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #1a3a1a 0%, #2d6f2d 100%)",
         meta: "183 pessoas",
+        resumo: "Clima de praia com drinks e ritmos quentes",
+        descricao:
+          "Uma noite tropical com decoração de praia, drinks autorais e set de reggae, afrobeat e MPB dançante. Fantasia tropical é bem-vinda!",
+        tags: ["Tropical", "Drinks", "Fantasia", "Dança"],
       },
       {
         id: 9,
@@ -103,6 +135,10 @@ export const SECOES_MOCK: Secao[] = [
         imagemUrl: "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?w=400&q=70&auto=format&fit=crop",
         imagemCor: "linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%)",
         meta: "97 pessoas",
+        resumo: "Galpão temático de terror com casa mal-assombrada",
+        descricao:
+          "Festa de Halloween em galpão industrial com casa mal-assombrada, sessão de terror e pista com o melhor do dark pop. Fantasia obrigatória.",
+        tags: ["Terror", "Halloween", "Fantasia obrigatória", "Dark pop"],
       },
     ],
   },

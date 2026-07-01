@@ -8,6 +8,12 @@ export interface Evento {
   imagemUrl: string;
   imagemCor: string;
   meta: string;
+  /** Resumo curto exibido na "breve descrição" (uma linha). */
+  resumo: string;
+  /** Parágrafo de descrição do evento. */
+  descricao: string;
+  /** Chips temáticos do evento (categorias, vibe, etc.). */
+  tags: string[];
 }
 
 export interface Secao {

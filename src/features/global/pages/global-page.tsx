@@ -5,13 +5,16 @@ import { MenuLateral } from "../../../components/menu-lateral";
 import { useLogout } from "../../../hooks/useLogout";
 import { BuscaGlobal } from "../components/BuscaGlobal";
 import { SecaoEventos } from "../components/SecaoEventos";
+import { EventoDetalheModal } from "../components/EventoDetalheModal";
 import { SECOES_MOCK } from "../data/eventos-mock";
+import type { Evento, TipoMeta } from "../types";
 
 export function GlobalPage() {
   const logout = useLogout();
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
   const [busca, setBusca] = useState("");
+  const [selecionado, setSelecionado] = useState<{ evento: Evento; tipoMeta: TipoMeta } | null>(null);
 
   const secoesFiltradas = busca.trim()
     ? SECOES_MOCK.map((s) => ({
@@ -41,7 +44,7 @@ export function GlobalPage() {
             <SecaoEventos
               key={secao.id}
               secao={secao}
-              onAbrirEvento={(id) => navigate(`/eventos/${id}`)}
+              onAbrirEvento={(evento) => setSelecionado({ evento, tipoMeta: secao.tipoMeta })}
               onVerTudo={(secaoId) => navigate(`/global/${secaoId}`)}
             />
           ))
@@ -51,6 +54,14 @@ export function GlobalPage() {
           </p>
         )}
       </div>
+
+      {selecionado && (
+        <EventoDetalheModal
+          evento={selecionado.evento}
+          tipoMeta={selecionado.tipoMeta}
+          onFechar={() => setSelecionado(null)}
+        />
+      )}
     </div>
   );
 }

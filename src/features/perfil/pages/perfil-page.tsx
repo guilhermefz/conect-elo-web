@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Navbar } from "../../../components/navbar";
 import { MenuLateral } from "../../../components/menu-lateral";
@@ -24,6 +24,7 @@ export function PerfilPage() {
   const [carregando, setCarregando] = useState(true);
   const [erroFoto, setErroFoto] = useState("");
   const { erro, capturarErro, limparErro } = useErrorHandler();
+  const toastExibido = useRef(false);
 
   useEffect(() => {
     obterPerfil()
@@ -38,8 +39,12 @@ export function PerfilPage() {
   }, []);
 
   useEffect(() => {
-    if (location.state?.mensagem) {
+    // O guard com ref evita o toast duplicado da dupla execução do efeito no
+    // StrictMode; limpar o state impede que ele reapareça ao voltar pelo histórico.
+    if (location.state?.mensagem && !toastExibido.current) {
+      toastExibido.current = true;
       toast.sucesso(location.state.mensagem);
+      navigate(location.pathname, { replace: true, state: null });
     }
   }, []);
 

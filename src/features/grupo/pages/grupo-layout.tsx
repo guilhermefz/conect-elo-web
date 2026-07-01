@@ -62,6 +62,9 @@ export function GrupoLayout() {
           aberto={infoAberto}
           onFechar={() => setInfoAberto(false)}
           detalhes={detalhes}
+          onFotoAtualizada={(novaUrl) =>
+            setDetalhes((d) => (d ? { ...d, imgGrupo: novaUrl } : d))
+          }
         />
 
         <div className={abaAtiva === "chat" ? "flex flex-1 flex-col overflow-hidden" : "hidden"}>

@@ -1,11 +1,11 @@
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { CarrosselHorizontal } from "./CarrosselHorizontal";
 import { EventoCard } from "./EventoCard";
-import type { Secao } from "../types";
+import type { Evento, Secao } from "../types";
 
 interface Props {
   secao: Secao;
-  onAbrirEvento: (id: number) => void;
+  onAbrirEvento: (evento: Evento) => void;
   onVerTudo: (secaoId: string) => void;
 }
 

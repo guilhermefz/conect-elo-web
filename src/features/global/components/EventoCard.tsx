@@ -5,7 +5,7 @@ import { ICONE_META } from "../utils/formatar-meta";
 interface Props {
   evento: Evento;
   tipoMeta: TipoMeta;
-  onAbrir: (id: number) => void;
+  onAbrir: (evento: Evento) => void;
 }
 
 export function EventoCard({ evento, tipoMeta, onAbrir }: Props) {
@@ -14,7 +14,7 @@ export function EventoCard({ evento, tipoMeta, onAbrir }: Props) {
 
   return (
     <button
-      onClick={() => onAbrir(evento.id)}
+      onClick={() => onAbrir(evento)}
       className="flex flex-col gap-2 w-36 shrink-0 snap-start text-left"
     >
       <div

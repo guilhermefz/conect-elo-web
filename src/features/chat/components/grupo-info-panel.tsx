@@ -13,9 +13,10 @@ interface Props {
   aberto: boolean;
   onFechar: () => void;
   detalhes: GrupoDetalhes | null;
+  onFotoAtualizada?: (novaUrl: string) => void;
 }
 
-export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
+export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes, onFotoAtualizada }: Props) {
   const navigate = useNavigate();
   const toast = useToast();
   const [fotoUrl, setFotoUrl] = useState<string | null>(null);
@@ -55,6 +56,7 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes }: Props) {
       const novaUrl = `${buildFotoGrupoUrl(url)}?t=${Date.now()}`;
       setFotoUrl(null);
       setTimeout(() => setFotoUrl(novaUrl), 0);
+      onFotoAtualizada?.(url);
       toast.sucesso("Foto do grupo atualizada com sucesso!");
     } catch {
       setErroFoto("Erro ao enviar foto (máx. 5MB, JPG/PNG/WebP).");
