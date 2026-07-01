@@ -6,7 +6,9 @@ import { MensagemErro } from "../../../components/mensagem-erro";
 import { useLogout } from "../../../hooks/useLogout";
 import { useErrorHandler } from "../../../hooks/useErrorHandler";
 import { obterPerfil, atualizarFoto, buildFotoUrl } from "../services/perfil-service";
+import type { Interesse } from "../services/perfil-service";
 import { PerfilCard } from "../components/perfil-card";
+import { InteressesSecao } from "../components/interesses-secao";
 import { useToast } from "../../../components/toast";
 
 export function PerfilPage() {
@@ -17,6 +19,7 @@ export function PerfilPage() {
   const [menuAberto, setMenuAberto] = useState(false);
   const [nome, setNome] = useState("");
   const [bio, setBio] = useState("");
+  const [interesses, setInteresses] = useState<Interesse[]>([]);
   const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erroFoto, setErroFoto] = useState("");
@@ -27,6 +30,7 @@ export function PerfilPage() {
       .then((d) => {
         setNome(d.nome ?? "");
         setBio(d.bio ?? "");
+        setInteresses(d.interesses ?? []);
         setFotoUrl(d.fotoPerfilUrl ? buildFotoUrl(d.fotoPerfilUrl) : null);
       })
       .catch(capturarErro)
@@ -70,14 +74,19 @@ export function PerfilPage() {
 
       {carregando
         ? <p className="text-gray-400 text-center mt-10">Carregando...</p>
-        : <PerfilCard
-            nome={nome}
-            bio={bio}
-            fotoUrl={fotoUrl}
-            erro={erroFoto}
-            onFotoChange={handleFoto}
-            onEditar={() => navigate("/perfil/editar")}
-          />
+        : <div className="flex-1 overflow-y-auto">
+            <PerfilCard
+              nome={nome}
+              bio={bio}
+              fotoUrl={fotoUrl}
+              erro={erroFoto}
+              onFotoChange={handleFoto}
+              onEditar={() => navigate("/perfil/editar")}
+            />
+            <div className="px-6 pb-8 max-w-md mx-auto w-full">
+              <InteressesSecao interesses={interesses} onEditar={() => navigate("/perfil/interesses")} />
+            </div>
+          </div>
       }
     </div>
   );
