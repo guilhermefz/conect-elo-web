@@ -31,6 +31,7 @@ export async function criarGrupo(payload: CriarGrupoPayload): Promise<void> {
 export interface MembroGrupoExibicao {
   usuarioId: string;
   nomeUsuario: string;
+  fotoPerfilUrl?: string;
   dataEntrada: string;
   tipo: number;
 }

@@ -209,8 +209,11 @@ export function GrupoInfoPanel({ grupoId, aberto, onFechar, detalhes, onFotoAtua
                 {detalhes.membros.map((membro) => (
                   <div key={membro.usuarioId} className="flex items-center justify-between py-2 border-b border-subtle last:border-0">
                     <div className="flex items-center gap-3">
-                      <div className="size-8 rounded-full bg-gray-700 flex items-center justify-center text-xs shrink-0">
-                        🤝
+                      <div className="size-8 rounded-full bg-gray-700 overflow-hidden flex items-center justify-center text-xs shrink-0">
+                        {membro.fotoPerfilUrl
+                          ? <img src={membro.fotoPerfilUrl} alt={membro.nomeUsuario} className="size-full object-cover" />
+                          : <span>🤝</span>
+                        }
                       </div>
                       <div className="flex flex-col">
                         <p className="text-white text-sm">{membro.nomeUsuario}</p>

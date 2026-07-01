@@ -32,6 +32,13 @@ export function GrupoLayout() {
     () => (detalhes?.imgGrupo ? buildFotoGrupoUrl(detalhes.imgGrupo) : null),
     [detalhes?.imgGrupo]
   );
+  const fotosPorUsuario = useMemo(() => {
+    const mapa: Record<string, string> = {};
+    for (const m of detalhes?.membros ?? []) {
+      if (m.fotoPerfilUrl) mapa[m.usuarioId] = m.fotoPerfilUrl;
+    }
+    return mapa;
+  }, [detalhes?.membros]);
 
   useEffect(() => {
     if (location.state?.mensagem) {
@@ -68,7 +75,7 @@ export function GrupoLayout() {
         />
 
         <div className={abaAtiva === "chat" ? "flex flex-1 flex-col overflow-hidden" : "hidden"}>
-          <ChatPage onMudarAba={setAbaAtiva} />
+          <ChatPage onMudarAba={setAbaAtiva} fotosPorUsuario={fotosPorUsuario} />
         </div>
         <div className={abaAtiva === "eventos" ? "flex flex-1 flex-col overflow-hidden" : "hidden"}>
           <EventosPage onMudarAba={setAbaAtiva} />

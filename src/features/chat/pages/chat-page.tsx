@@ -7,9 +7,10 @@ import { getUsuarioIdFromToken } from "../../../lib/jwt";
 
 interface Props {
   onMudarAba: (aba: "chat" | "eventos") => void;
+  fotosPorUsuario?: Record<string, string>;
 }
 
-export function ChatPage({ onMudarAba }: Props) {
+export function ChatPage({ onMudarAba, fotosPorUsuario }: Props) {
   const { id } = useParams<{ id: string }>();
   const usuarioId = useMemo(() => getUsuarioIdFromToken() ?? "", []);
   const { mensagens, enviarMensagem } = useChat(id!);
@@ -70,6 +71,7 @@ export function ChatPage({ onMudarAba }: Props) {
             })}
             enviada={msg.usuarioId === usuarioId}
             mostrarAutor={index === 0 || mensagens[index - 1].usuarioId !== msg.usuarioId}
+            fotoUrl={fotosPorUsuario?.[msg.usuarioId]}
           />
         ))}
         <div ref={bottomRef} />

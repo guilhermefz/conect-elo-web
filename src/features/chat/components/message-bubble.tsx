@@ -4,9 +4,10 @@ interface Props {
   horario: string;
   enviada: boolean;
   mostrarAutor: boolean;
+  fotoUrl?: string;
 }
 
-export function MessageBubble({ conteudo, autor, horario, enviada, mostrarAutor }: Props) {
+export function MessageBubble({ conteudo, autor, horario, enviada, mostrarAutor, fotoUrl }: Props) {
   if (enviada) {
     return (
       <div className="flex justify-end">
@@ -21,8 +22,11 @@ export function MessageBubble({ conteudo, autor, horario, enviada, mostrarAutor 
   return (
     <div className="flex items-end gap-2">
       {mostrarAutor ? (
-        <div className="size-7 rounded-full bg-gray-600 shrink-0 flex items-center justify-center text-xs">
-          🤝
+        <div className="size-7 rounded-full bg-gray-600 overflow-hidden shrink-0 flex items-center justify-center text-xs">
+          {fotoUrl
+            ? <img src={fotoUrl} alt={autor} className="size-full object-cover" />
+            : <span>🤝</span>
+          }
         </div>
       ) : (
         <div className="size-7 shrink-0" />
